@@ -6,37 +6,70 @@
 
 @if (ViewBag.Profit != null)
 {
-    <h2>KPI:</h2>
+    <h2>KPI (latest)</h2>
     <ul>
-        <li>Profit: @ViewBag.Profit USD</li>
-        <li>Profit Margin: @ViewBag.ProfitMargin %</li>
-        <li>ROI: @ViewBag.ROI %</li>
-        <li>Break-Even Point: @ViewBag.BreakEven units</li>
-        <li>Forecasted Next Profit: @ViewBag.ForecastedProfit USD</li>
+        <li>Profit: @String.Format("{0:N2}", ViewBag.Profit) USD</li>
+        <li>Profit Margin: @String.Format("{0:N2}", ViewBag.ProfitMargin) %</li>
+        <li>ROI: @String.Format("{0:N2}", ViewBag.ROI) %</li>
+        <li>Break-Even Point: @String.Format("{0:N2}", ViewBag.BreakEven) units</li>
+        <li>Forecasted Next Profit: @(ViewBag.ForecastedProfit != null ? String.Format("{0:N2} USD", ViewBag.ForecastedProfit) : "Insufficient data")</li>
         <li>Recommendation: @ViewBag.Recommendation</li>
     </ul>
 
+    <h3>Aggregated (averages)</h3>
+    <ul>
+        <li>Average Profit: @String.Format("{0:N2}", ViewBag.AvgProfit) USD</li>
+        <li>Average Profit Margin: @String.Format("{0:N2}", ViewBag.AvgProfitMargin) %</li>
+        <li>Average ROI: @String.Format("{0:N2}", ViewBag.AvgROI) %</li>
+    </ul>
+
     <h2>Trends Chart</h2>
-    <canvas id="trendsChart" width="400" height="200"></canvas>
+    <canvas id="trendsChart" width="600" height="300"></canvas>
+
+    <p>
+        <a class="btn btn-primary" asp-controller="Analytics" asp-action="AddData">Add New Record</a>
+        <a class="btn btn-secondary" asp-controller="Analytics" asp-action="List">Manage All Data</a>
+    </p>
+
     <script src="~/lib/chartjs/chart.umd.min.js"></script>
     <script>
-        var ctx = document.getElementById('trendsChart').getContext('2d');
-        var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ChartData));
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartData.Labels,
-                datasets: [{
-                    label: 'Revenue',
-                    data: chartData.Revenues,
-                    borderColor: 'green'
-                }, {
-                    label: 'Expenses',
-                    data: chartData.Expenses,
-                    borderColor: 'red'
-                }]
-            }
-        });
+        (function() {
+            var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ChartData));
+            var ctx = document.getElementById('trendsChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.Labels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: chartData.Revenues,
+                        borderColor: 'green',
+                        tension: 0.2,
+                        fill: false
+                    }, {
+                        label: 'Expenses',
+                        data: chartData.Expenses,
+                        borderColor: 'red',
+                        tension: 0.2,
+                        fill: false
+                    }, {
+                        label: 'Profit',
+                        data: chartData.Profits,
+                        borderColor: 'blue',
+                        tension: 0.2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        })();
     </script>
 }
 else

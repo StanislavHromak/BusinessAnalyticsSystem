@@ -1,0 +1,19 @@
+﻿@model BusinessAnalyticsSystem.Models.FinancialData
+
+<h2>Details for @Model.Date.ToShortDateString()</h2>
+
+<ul>
+    <li>Revenue: @Model.Revenue</li>
+    <li>Expenses: @Model.Expenses</li>
+    <li>Investment: @Model.Investment</li>
+    <li>Fixed Costs: @Model.FixedCosts</li>
+    <li>Variable Costs per Unit: @Model.VariableCostsPerUnit</li>
+    <li>Price per Unit: @Model.PricePerUnit</li>
+    <li>Units Sold: @Model.UnitsSold</li>
+    <li>Profit: @Model.Profit</li>
+    <li>Profit Margin: @Model.ProfitMargin %</li>
+    <li>ROI: @Model.ROI %</li>
+    <li>Break Even: @Model.BreakEven units</li>
+</ul>
+
+<p><a asp-action="List">Back to List</a></p>
