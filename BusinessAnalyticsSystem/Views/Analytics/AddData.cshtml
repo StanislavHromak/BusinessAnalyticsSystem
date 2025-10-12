@@ -1,0 +1,39 @@
+﻿@model BusinessAnalyticsSystem.Models.FinancialData
+
+<h2>Add Financial Data</h2>
+
+<form asp-action="AddData">
+    <div>
+        <label asp-for="Date"></label>
+        <input asp-for="Date" type="date" />
+    </div>
+    <div>
+        <label asp-for="Revenue"></label>
+        <input asp-for="Revenue" type="number" />
+    </div>
+    <div>
+        <label asp-for="Expenses"></label>
+        <input asp-for="Expenses" type="number" />
+    </div>
+    <div>
+        <label asp-for="Investment"></label>
+        <input asp-for="Investment" type="number" />
+    </div>
+    <div>
+        <label asp-for="FixedCosts"></label>
+        <input asp-for="FixedCosts" type="number" />
+    </div>
+    <div>
+        <label asp-for="VariableCostsPerUnit"></label>
+        <input asp-for="VariableCostsPerUnit" type="number" />
+    </div>
+    <div>
+        <label asp-for="PricePerUnit"></label>
+        <input asp-for="PricePerUnit" type="number" />
+    </div>
+    <div>
+        <label asp-for="UnitsSold"></label>
+        <input asp-for="UnitsSold" type="number" />
+    </div>
+    <button type="submit">Submit</button>
+</form>

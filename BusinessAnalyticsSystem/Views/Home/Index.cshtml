@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Business Analytics System";
+}
+
+<h1>Business Analytics System for Economic Decision Support</h1>
+
+@if (ViewBag.Profit != null)
+{
+    <h2>KPI:</h2>
+    <ul>
+        <li>Profit: @ViewBag.Profit USD</li>
+        <li>Profit Margin: @ViewBag.ProfitMargin %</li>
+        <li>ROI: @ViewBag.ROI %</li>
+        <li>Break-Even Point: @ViewBag.BreakEven units</li>
+        <li>Forecasted Next Profit: @ViewBag.ForecastedProfit USD</li>
+        <li>Recommendation: @ViewBag.Recommendation</li>
+    </ul>
+
+    <h2>Trends Chart</h2>
+    <canvas id="trendsChart" width="400" height="200"></canvas>
+    <script src="~/lib/chartjs/chart.umd.min.js"></script>
+    <script>
+        var ctx = document.getElementById('trendsChart').getContext('2d');
+        var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ChartData));
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.Labels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: chartData.Revenues,
+                    borderColor: 'green'
+                }, {
+                    label: 'Expenses',
+                    data: chartData.Expenses,
+                    borderColor: 'red'
+                }]
+            }
+        });
+    </script>
+}
+else
+{
+    <p>No data yet. <a asp-controller="Analytics" asp-action="AddData">Add Financial Data</a></p>
+}
