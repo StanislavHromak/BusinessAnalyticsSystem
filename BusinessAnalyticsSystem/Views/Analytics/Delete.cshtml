@@ -1,11 +1,19 @@
 ﻿@model BusinessAnalyticsSystem.Models.FinancialData
 
-<h2>Delete Record</h2>
+<h2>Delete Financial Record</h2>
 
-<p>Are you sure you want to delete this record from @Model.Date.ToShortDateString()?</p>
+<p>Are you sure you want to delete this record from <strong>@Model.Date.ToShortDateString()</strong>?</p>
 
-<form asp-action="Delete">
+<table border="1" cellpadding="5">
+    <tr><th>Revenue</th><td>@Model.Revenue.ToString("F2")</td></tr>
+    <tr><th>Total Costs</th><td>@Model.TotalCosts.ToString("F2")</td></tr>
+    <tr><th>Profit</th><td>@Model.Profit.ToString("F2")</td></tr>
+    <tr><th>ROI (%)</th><td>@Model.ROI.ToString("F2")</td></tr>
+</table>
+
+<form asp-action="DeleteConfirmed">
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="List" class="btn btn-secondary">Cancel</a>
+    <br />
+    <button type="submit" style="color:red;">Delete</button>
+    <a asp-action="List">Cancel</a>
 </form>
