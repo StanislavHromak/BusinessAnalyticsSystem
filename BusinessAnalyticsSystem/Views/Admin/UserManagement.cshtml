@@ -1,43 +1,88 @@
 ﻿@model IEnumerable<BusinessAnalyticsSystem.Models.User>
 
-<h2>User Management</h2>
+@{
+    ViewData["Title"] = "User Management";
+}
 
-<table border="1" cellpadding="8" style="border-collapse:collapse;">
-    <thead>
-        <tr style="background-color:#f2f2f2;">
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Id</td>
-                <td>@user.Username</td>
-                <td>@user.Email</td>
-                <td>@user.Role</td>
-                <td>
-                    @if (user.Role != "Admin")
-                    {
-                        <form asp-action="ChangeRole" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@user.Id" />
-                            <select name="newRole">
-                                <option value="Investor" selected="@("Investor" == user.Role)">Investor</option>
-                                <option value="Owner" selected="@("Owner" == user.Role)">Owner</option>
-                            </select>
-                            <button type="submit">Change</button>
-                        </form>
-                        <form asp-action="DeleteUser" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@user.Id" />
-                            <button type="submit" onclick="return confirm('Delete user @user.Username?');">Delete</button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-users fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">User Management</h1>
+                    <p class="lead text-muted mb-4">
+                        Manage system users: update roles and delete accounts with security and ease.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-table me-2"></i>List of Users
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td>@user.Id</td>
+                                        <td>@user.Username</td>
+                                        <td>@user.Email</td>
+                                        <td>@user.Role</td>
+                                        <td>
+                                            @if (user.Role != "Admin")
+                                            {
+                                                <form asp-action="ChangeRole" method="post" class="d-inline-flex align-items-center gap-2">
+                                                    <input type="hidden" name="id" value="@user.Id" />
+                                                    <select name="newRole" class="form-select form-select-sm w-auto">
+                                                        <option value="Investor" selected="@("Investor" == user.Role)">Investor</option>
+                                                        <option value="Owner" selected="@("Owner" == user.Role)">Owner</option>
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-sync-alt me-1"></i>Change
+                                                    </button>
+                                                </form>
+                                                <form asp-action="DeleteUser" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@user.Id" />
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete user @user.Username?');">
+                                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No actions for admin</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
