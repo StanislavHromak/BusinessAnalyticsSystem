@@ -5,54 +5,88 @@
     var role = Context.Session.GetString("UserRole");
 }
 
-<h2>Financial Data List</h2>
-
-<table border="1" cellpadding="6" style="border-collapse:collapse; width:90%;">
-    <thead>
-        <tr style="background-color:#f2f2f2;">
-            <th>Date</th>
-            <th>Revenue</th>
-            <th>Gross Costs</th>
-            <th>Total Costs</th>
-            <th>Profit</th>
-            <th>ROI (%)</th>
-            <th>ROS (%)</th>
-            <th>Break-Even (units)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Date.ToShortDateString()</td>
-                <td>@item.Revenue.ToString("F2")</td>
-                <td>@item.GrossCosts.ToString("F2")</td>
-                <td>@item.TotalCosts.ToString("F2")</td>
-                <td>@item.Profit.ToString("F2")</td>
-                <td>@item.ROI.ToString("F2")</td>
-                <td>@item.ROS.ToString("F2")</td>
-                <td>@item.BreakEven.ToString("F0")</td>
-                <td>
-                    @* --- Investor only sees Details --- *@
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-list fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Financial Data List</h1>
+                    <p class="lead text-muted mb-4">
+                        View and manage financial records with detailed metrics and insights.
+                    </p>
                     @if (role == "Admin" || role == "Owner")
                     {
-                        <span> | </span>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <span> | </span>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="AddData" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-plus-circle me-2"></i>Add New Data
+                        </a>
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<br />
-
-@if (role == "Admin" || role == "Owner")
-{
-    <a asp-action="AddData" style="font-weight:bold;">+ Add New Data</a>
-}
+    <!-- Data Table Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-table me-2"></i>Financial Records
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Revenue</th>
+                                    <th scope="col">Gross Costs</th>
+                                    <th scope="col">Total Costs</th>
+                                    <th scope="col">Profit</th>
+                                    <th scope="col">ROI (%)</th>
+                                    <th scope="col">ROS (%)</th>
+                                    <th scope="col">Break-Even (units)</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@item.Date.ToShortDateString()</td>
+                                        <td>@item.Revenue.ToString("F2")</td>
+                                        <td>@item.GrossCosts.ToString("F2")</td>
+                                        <td>@item.TotalCosts.ToString("F2")</td>
+                                        <td>@item.Profit.ToString("F2")</td>
+                                        <td>@item.ROI.ToString("F2")</td>
+                                        <td>@item.ROS.ToString("F2")</td>
+                                        <td>@item.BreakEven.ToString("F0")</td>
+                                        <td>
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-info-circle me-1"></i>Details
+                                            </a>
+                                            @if (role == "Admin" || role == "Owner")
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

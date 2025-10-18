@@ -1,38 +1,92 @@
 ﻿@model BusinessAnalyticsSystem.Models.FinancialData
 
-<h2>Edit Financial Data</h2>
+@{
+    ViewData["Title"] = "Edit Financial Data";
+}
 
-<form asp-action="Edit">
-    <input type="hidden" asp-for="Id" />
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-edit fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Edit Financial Data</h1>
+                    <p class="lead text-muted mb-4">
+                        Update financial metrics for the selected record.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <table border="1" cellpadding="5">
-        <tr>
-            <td><label asp-for="Date"></label></td>
-            <td><input asp-for="Date" type="date" /></td>
-        </tr>
-        <tr>
-            <td><label asp-for="FixedCosts"></label></td>
-            <td><input asp-for="FixedCosts" type="number" step="0.01" /></td>
-        </tr>
-        <tr>
-            <td><label asp-for="VariableCostPerUnit"></label></td>
-            <td><input asp-for="VariableCostPerUnit" type="number" step="0.01" /></td>
-        </tr>
-        <tr>
-            <td><label asp-for="PricePerUnit"></label></td>
-            <td><input asp-for="PricePerUnit" type="number" step="0.01" /></td>
-        </tr>
-        <tr>
-            <td><label asp-for="UnitsSold"></label></td>
-            <td><input asp-for="UnitsSold" type="number" /></td>
-        </tr>
-        <tr>
-            <td><label asp-for="Investment"></label></td>
-            <td><input asp-for="Investment" type="number" step="0.01" /></td>
-        </tr>
-    </table>
+    <!-- Form Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-file-alt me-2"></i>Edit Financial Data Form
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Date" class="form-label fw-bold"></label>
+                                <input asp-for="Date" type="date" class="form-control" />
+                                <span asp-validation-for="Date" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="FixedCosts" class="form-label fw-bold"></label>
+                                <input asp-for="FixedCosts" type="number" step="0.01" class="form-control" />
+                                <span asp-validation-for="FixedCosts" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="VariableCostPerUnit" class="form-label fw-bold"></label>
+                                <input asp-for="VariableCostPerUnit" type="number" step="0.01" class="form-control" />
+                                <span asp-validation-for="VariableCostPerUnit" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PricePerUnit" class="form-label fw-bold"></label>
+                                <input asp-for="PricePerUnit" type="number" step="0.01" class="form-control" />
+                                <span asp-validation-for="PricePerUnit" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="UnitsSold" class="form-label fw-bold"></label>
+                                <input asp-for="UnitsSold" type="number" class="form-control" />
+                                <span asp-validation-for="UnitsSold" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Investment" class="form-label fw-bold"></label>
+                                <input asp-for="Investment" type="number" step="0.01" class="form-control" />
+                                <span asp-validation-for="Investment" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-4">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <br />
-    <button type="submit">Save Changes</button>
-    <a asp-action="List">← Back to List</a>
-</form>
+    <!-- Back Link -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <a asp-action="List" class="btn btn-outline-primary btn-lg px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

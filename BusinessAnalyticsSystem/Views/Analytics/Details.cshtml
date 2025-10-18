@@ -1,25 +1,116 @@
 ﻿@model BusinessAnalyticsSystem.Models.FinancialData
 
-<h2>Financial Data Details</h2>
+@{
+    ViewData["Title"] = "Financial Data Details";
+}
 
-<table border="1" cellpadding="5">
-    <tr><th>Date</th><td>@Model.Date.ToShortDateString()</td></tr>
-    <tr><th>Fixed Costs</th><td>@Model.FixedCosts.ToString("F2")</td></tr>
-    <tr><th>Variable Cost per Unit</th><td>@Model.VariableCostPerUnit.ToString("F2")</td></tr>
-    <tr><th>Price per Unit</th><td>@Model.PricePerUnit.ToString("F2")</td></tr>
-    <tr><th>Units Sold</th><td>@Model.UnitsSold</td></tr>
-    <tr><th>Investments</th><td>@Model.Investment.ToString("F2")</td></tr>
-    <tr><th>Gross Costs</th><td>@Model.GrossCosts.ToString("F2")</td></tr>
-    <tr><th>Total Costs</th><td>@Model.TotalCosts.ToString("F2")</td></tr>
-    <tr><th>Revenue</th><td>@Model.Revenue.ToString("F2")</td></tr>
-    <tr><th>Profit</th><td>@Model.Profit.ToString("F2")</td></tr>
-    <tr><th>Margin per Unit</th><td>@Model.MarginPerUnit.ToString("F2")</td></tr>
-    <tr><th>ROI (%)</th><td>@Model.ROI.ToString("F2")</td></tr>
-    <tr><th>ROS (%)</th><td>@Model.ROS.ToString("F2")</td></tr>
-    <tr><th>Break-Even Point (units)</th><td>@Model.BreakEven.ToString("F0")</td></tr>
-</table>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-file-alt fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Financial Data Details</h1>
+                    <p class="lead text-muted mb-4">
+                        Detailed view of financial metrics for the selected record.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<br />
-<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-<a asp-action="Delete" asp-route-id="@Model.Id">Delete</a> |
-<a asp-action="List">← Back to List</a>
+    <!-- Details Table Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-table me-2"></i>Financial Metrics
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Date</th>
+                                    <td>@Model.Date.ToShortDateString()</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Fixed Costs</th>
+                                    <td>@Model.FixedCosts.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Variable Cost per Unit</th>
+                                    <td>@Model.VariableCostPerUnit.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Price per Unit</th>
+                                    <td>@Model.PricePerUnit.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Units Sold</th>
+                                    <td>@Model.UnitsSold</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Investments</th>
+                                    <td>@Model.Investment.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Gross Costs</th>
+                                    <td>@Model.GrossCosts.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Total Costs</th>
+                                    <td>@Model.TotalCosts.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Revenue</th>
+                                    <td>@Model.Revenue.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Profit</th>
+                                    <td>@Model.Profit.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Margin per Unit</th>
+                                    <td>@Model.MarginPerUnit.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">ROI (%)</th>
+                                    <td>@Model.ROI.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">ROS (%)</th>
+                                    <td>@Model.ROS.ToString("F2")</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Break-Even Point (units)</th>
+                                    <td>@Model.BreakEven.ToString("F0")</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-lg px-4 me-2">
+                <i class="fas fa-edit me-2"></i>Edit
+            </a>
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-lg px-4 me-2">
+                <i class="fas fa-trash-alt me-2"></i>Delete
+            </a>
+            <a asp-action="List" class="btn btn-outline-primary btn-lg px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+</div>
