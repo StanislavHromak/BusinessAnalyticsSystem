@@ -9,34 +9,60 @@ namespace BusinessAnalyticsSystem.Models
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } = DateTime.Now;
 
-        public double Revenue { get; set; }      // Доходи
-        public double Expenses { get; set; }     // Витрати
-        public double Investment { get; set; }   // Інвестиції
-        public double FixedCosts { get; set; }   // Фіксовані витрати
-        public double VariableCostsPerUnit { get; set; } // Змінні витрати
-        public double PricePerUnit { get; set; } // Ціна за одиницю
-        public int UnitsSold { get; set; }       // Продані одиниці
+        // ===== User input =====
+        [Display(Name = "Fixed Costs")]
+        public double FixedCosts { get; set; }
 
-        // KPI — зберігатимуться в базі
-        public double Profit { get; set; }
-        public double ProfitMargin { get; set; }
-        public double ROI { get; set; }
-        public double BreakEven { get; set; }
+        [Display(Name = "Variable Cost per Unit")]
+        public double VariableCostPerUnit { get; set; }
 
-        // Методи обчислення
-        public double CalculateProfit() => Revenue - Expenses;
-        public double CalculateProfitMargin() => Revenue > 0 ? (CalculateProfit() / Revenue) * 100 : 0;
-        public double CalculateROI() => Investment > 0 ? (CalculateProfit() / Investment) * 100 : 0;
-        public double CalculateBreakEven() => (PricePerUnit - VariableCostsPerUnit) > 0
-            ? FixedCosts / (PricePerUnit - VariableCostsPerUnit)
-            : 0;
+        [Display(Name = "Price per Unit")]
+        public double PricePerUnit { get; set; }
 
-        public void CalculateAllKPI()
+        [Display(Name = "Units Sold")]
+        public int UnitsSold { get; set; }
+
+        [Display(Name = "Investments")]
+        public double Investment { get; set; }
+
+        // ===== Calculated fields =====
+        [Display(Name = "Gross Costs")]
+        public double GrossCosts { get; set; } 
+
+        [Display(Name = "Total Costs")]
+        public double TotalCosts { get; set; } 
+
+        [Display(Name = "Revenue")]
+        public double Revenue { get; set; } 
+
+        [Display(Name = "Profit")]
+        public double Profit { get; set; } 
+
+        [Display(Name = "Margin per Unit")]
+        public double MarginPerUnit { get; set; }
+
+        [Display(Name = "ROI (%)")]
+        public double ROI { get; set; } 
+
+        [Display(Name = "ROS (%)")]
+        public double ROS { get; set; } 
+
+        [Display(Name = "Break-Even Point (units)")]
+        public double BreakEven { get; set; } 
+
+        public void CalculateKPI()
         {
-            Profit = CalculateProfit();
-            ProfitMargin = CalculateProfitMargin();
-            ROI = CalculateROI();
-            BreakEven = CalculateBreakEven();
+            Revenue = PricePerUnit * UnitsSold;
+            GrossCosts = FixedCosts + VariableCostPerUnit * UnitsSold;
+            TotalCosts = GrossCosts + Investment;
+            Profit = Revenue - TotalCosts;
+            MarginPerUnit = PricePerUnit - VariableCostPerUnit;
+            ROI = Investment > 0 ? (Profit / Investment) * 100 : 0;
+            ROS = Revenue > 0 ? (Profit / Revenue) * 100 : 0;
+            BreakEven = (PricePerUnit - VariableCostPerUnit) > 0
+                ? FixedCosts / (PricePerUnit - VariableCostPerUnit)
+                : 0;
         }
     }
 }
+
