@@ -2,77 +2,25 @@
     ViewData["Title"] = "Business Analytics System";
 }
 
-<h1>Business Analytics System for Economic Decision Support</h1>
+<h1>Business Analytics System</h1>
+<p>
+    This web application is designed to support <strong>economic decision-making</strong>
+    by analyzing key financial indicators such as costs, investments, profits, and return rates.
+</p>
 
-@if (ViewBag.Profit != null)
+<p>Features include:</p>
+<ul>
+    <li>Data input and automatic KPI calculation (Profit, ROI, ROS, Break-Even)</li>
+    <li>Visual analysis and trends tracking</li>
+    <li>User authentication with profile and secure access</li>
+</ul>
+
+@if (Context.Session.GetString("Username") == null)
 {
-    <h2>KPI (latest)</h2>
-    <ul>
-        <li>Profit: @String.Format("{0:N2}", ViewBag.Profit) USD</li>
-        <li>Profit Margin: @String.Format("{0:N2}", ViewBag.ProfitMargin) %</li>
-        <li>ROI: @String.Format("{0:N2}", ViewBag.ROI) %</li>
-        <li>Break-Even Point: @String.Format("{0:N2}", ViewBag.BreakEven) units</li>
-        <li>Forecasted Next Profit: @(ViewBag.ForecastedProfit != null ? String.Format("{0:N2} USD", ViewBag.ForecastedProfit) : "Insufficient data")</li>
-        <li>Recommendation: @ViewBag.Recommendation</li>
-    </ul>
-
-    <h3>Aggregated (averages)</h3>
-    <ul>
-        <li>Average Profit: @String.Format("{0:N2}", ViewBag.AvgProfit) USD</li>
-        <li>Average Profit Margin: @String.Format("{0:N2}", ViewBag.AvgProfitMargin) %</li>
-        <li>Average ROI: @String.Format("{0:N2}", ViewBag.AvgROI) %</li>
-    </ul>
-
-    <h2>Trends Chart</h2>
-    <canvas id="trendsChart" width="600" height="300"></canvas>
-
-    <p>
-        <a class="btn btn-primary" asp-controller="Analytics" asp-action="AddData">Add New Record</a>
-        <a class="btn btn-secondary" asp-controller="Analytics" asp-action="List">Manage All Data</a>
-    </p>
-
-    <script src="~/lib/chartjs/chart.umd.min.js"></script>
-    <script>
-        (function() {
-            var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ChartData));
-            var ctx = document.getElementById('trendsChart').getContext('2d');
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartData.Labels,
-                    datasets: [{
-                        label: 'Revenue',
-                        data: chartData.Revenues,
-                        borderColor: 'green',
-                        tension: 0.2,
-                        fill: false
-                    }, {
-                        label: 'Expenses',
-                        data: chartData.Expenses,
-                        borderColor: 'red',
-                        tension: 0.2,
-                        fill: false
-                    }, {
-                        label: 'Profit',
-                        data: chartData.Profits,
-                        borderColor: 'blue',
-                        tension: 0.2,
-                        fill: false
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        })();
-    </script>
+    <a asp-action="Login" class="btn btn-primary">Login</a> 
+    <a asp-action="Register" class="btn btn-secondary">Register</a>
 }
 else
 {
-    <p>No data yet. <a asp-controller="Analytics" asp-action="AddData">Add Financial Data</a></p>
+    <a asp-action="Dashboard">Go to Dashboard</a>
 }
