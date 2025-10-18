@@ -2,25 +2,143 @@
     ViewData["Title"] = "Business Analytics System";
 }
 
-<h1>Business Analytics System</h1>
-<p>
-    This web application is designed to support <strong>economic decision-making</strong>
-    by analyzing key financial indicators such as costs, investments, profits, and return rates.
-</p>
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-chart-line fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-4">Business Analytics System</h1>
+                    <p class="lead text-muted mb-4">
+                        Professional financial analysis and business intelligence platform for data-driven decision making.
+                        Track key performance indicators, analyze financial metrics, and optimize business strategies.
+                    </p>
+                    
+                    @if (Context.Session.GetString("Username") == null)
+                    {
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <a asp-action="Login" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                            <a asp-action="Register" class="btn btn-outline-primary btn-lg px-4">
+                                <i class="fas fa-user-plus me-2"></i>Register
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-action="Dashboard" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 
-<p>Features include:</p>
-<ul>
-    <li>Data input and automatic KPI calculation (Profit, ROI, ROS, Break-Even)</li>
-    <li>Visual analysis and trends tracking</li>
-    <li>User authentication with profile and secure access</li>
-</ul>
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5 fw-bold text-dark">System Capabilities</h2>
+        </div>
+    </div>
 
-@if (Context.Session.GetString("Username") == null)
-{
-    <a asp-action="Login" class="btn btn-primary">Login</a> 
-    <a asp-action="Register" class="btn btn-secondary">Register</a>
-}
-else
-{
-    <a asp-action="Dashboard">Go to Dashboard</a>
-}
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-calculator fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Financial Analysis</h5>
+                    <p class="text-muted small">
+                        Automated calculation of key financial metrics including ROI, ROS, 
+                        profit margins, and break-even analysis.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-chart-bar fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Performance Tracking</h5>
+                    <p class="text-muted small">
+                        Comprehensive monitoring of business performance indicators 
+                        with detailed reporting and trend analysis.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Secure Platform</h5>
+                    <p class="text-muted small">
+                        Enterprise-grade security with role-based access control 
+                        and secure data management protocols.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Benefits -->
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-briefcase me-2"></i>Business Intelligence Features
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Real-time Analytics</strong> - Live financial data processing
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Automated Reporting</strong> - Scheduled business reports
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Data Security</strong> - Enterprise-grade protection
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Multi-user Access</strong> - Team collaboration tools
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Custom Dashboards</strong> - Personalized analytics views
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    <strong>Export Capabilities</strong> - Data export and integration
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,23 +1,75 @@
 ﻿@{
+    ViewData["Title"] = "Dashboard";
     var role = Context.Session.GetString("UserRole");
 }
 
-<h2>Welcome, @Context.Session.GetString("Username")!</h2>
-<p>Your role: <strong>@role</strong></p>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-tachometer-alt fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Welcome, @Context.Session.GetString("Username")!</h1>
+                    <p class="lead text-muted mb-4">
+                        Your role: <strong>@role</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-@if (role == "Admin" || role == "Owner")
-{
-    <ul>
-        <li><a asp-controller="Analytics" asp-action="AddData">Add Financial Data</a></li>
-        <li><a asp-controller="Analytics" asp-action="List">View Financial Records</a></li>
-    </ul>
-}
-else if (role == "Investor")
-{
-    <ul>
-        <li><a asp-controller="Analytics" asp-action="List">View Financial Data</a></li>
-    </ul>
-}
+    <!-- Actions Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-tasks me-2"></i>Available Actions
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (role == "Admin" || role == "Owner")
+                    {
+                        <ul class="list-unstyled text-center">
+                            <li class="mb-3">
+                                <a asp-controller="Analytics" asp-action="AddData" class="btn btn-outline-primary btn-lg px-4">
+                                    <i class="fas fa-plus-circle me-2"></i>Add Financial Data
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-controller="Analytics" asp-action="List" class="btn btn-outline-primary btn-lg px-4">
+                                    <i class="fas fa-list me-2"></i>View Financial Records
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                    else if (role == "Investor")
+                    {
+                        <ul class="list-unstyled text-center">
+                            <li>
+                                <a asp-controller="Analytics" asp-action="List" class="btn btn-outline-primary btn-lg px-4">
+                                    <i class="fas fa-list me-2"></i>View Financial Data
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 
-<a asp-action="Profile">My Profile</a> |
-<a asp-action="Logout">Logout</a>
+    <!-- Profile and Logout Links -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <a asp-action="Profile" class="btn btn-outline-primary btn-lg px-4 me-2">
+                <i class="fas fa-user me-2"></i>My Profile
+            </a>
+            <a asp-action="Logout" class="btn btn-outline-danger btn-lg px-4">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</div>

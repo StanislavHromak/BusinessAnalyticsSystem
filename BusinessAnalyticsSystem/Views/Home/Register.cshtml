@@ -1,24 +1,88 @@
 ﻿@model BusinessAnalyticsSystem.Models.User
 
-<h2>Register</h2>
-
-<form asp-action="Register">
-    <table border="1" cellpadding="5">
-        <tr><td>Username:</td><td><input asp-for="Username" /></td></tr>
-        <tr><td>Password:</td><td><input asp-for="Password" type="password" /></td></tr>
-        <tr><td>Email:</td><td><input asp-for="Email" type="email" /></td></tr>
-    </table>
-    <br />
-    <button type="submit">Register</button>
-</form>
-
-@if (ViewBag.Error != null)
-{
-    <p style="color:red;">@ViewBag.Error</p>
-}
-@if (ViewBag.Message != null)
-{
-    <p style="color:green;">@ViewBag.Message</p>
+@{
+    ViewData["Title"] = "Register";
 }
 
-<a asp-action="Login">Already have an account? Login</a>
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-user-plus fa-3x text-dark mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Register</h1>
+                    <p class="lead text-muted mb-4">
+                        Create a new account to access the Business Analytics System.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Form Section -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger text-center" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@ViewBag.Error
+                        </div>
+                    }
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-success text-center" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@ViewBag.Message
+                        </div>
+                    }
+                    <form asp-action="Register" method="post">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="Username" class="form-label fw-bold"></label>
+                                <input asp-for="Username" class="form-control" />
+                                <span asp-validation-for="Username" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Password" class="form-label fw-bold"></label>
+                                <input asp-for="Password" type="password" class="form-control" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Email" class="form-label fw-bold"></label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-4">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Link -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <a asp-action="Login" class="btn btn-outline-primary btn-lg px-4">
+                <i class="fas fa-sign-in-alt me-2"></i>Already have an account? Login
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
