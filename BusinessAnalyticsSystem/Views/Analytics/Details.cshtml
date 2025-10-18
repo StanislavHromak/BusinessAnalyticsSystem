@@ -1,19 +1,25 @@
 ﻿@model BusinessAnalyticsSystem.Models.FinancialData
 
-<h2>Details for @Model.Date.ToShortDateString()</h2>
+<h2>Financial Data Details</h2>
 
-<ul>
-    <li>Revenue: @Model.Revenue</li>
-    <li>Expenses: @Model.Expenses</li>
-    <li>Investment: @Model.Investment</li>
-    <li>Fixed Costs: @Model.FixedCosts</li>
-    <li>Variable Costs per Unit: @Model.VariableCostsPerUnit</li>
-    <li>Price per Unit: @Model.PricePerUnit</li>
-    <li>Units Sold: @Model.UnitsSold</li>
-    <li>Profit: @Model.Profit</li>
-    <li>Profit Margin: @Model.ProfitMargin %</li>
-    <li>ROI: @Model.ROI %</li>
-    <li>Break Even: @Model.BreakEven units</li>
-</ul>
+<table border="1" cellpadding="5">
+    <tr><th>Date</th><td>@Model.Date.ToShortDateString()</td></tr>
+    <tr><th>Fixed Costs</th><td>@Model.FixedCosts.ToString("F2")</td></tr>
+    <tr><th>Variable Cost per Unit</th><td>@Model.VariableCostPerUnit.ToString("F2")</td></tr>
+    <tr><th>Price per Unit</th><td>@Model.PricePerUnit.ToString("F2")</td></tr>
+    <tr><th>Units Sold</th><td>@Model.UnitsSold</td></tr>
+    <tr><th>Investments</th><td>@Model.Investment.ToString("F2")</td></tr>
+    <tr><th>Gross Costs</th><td>@Model.GrossCosts.ToString("F2")</td></tr>
+    <tr><th>Total Costs</th><td>@Model.TotalCosts.ToString("F2")</td></tr>
+    <tr><th>Revenue</th><td>@Model.Revenue.ToString("F2")</td></tr>
+    <tr><th>Profit</th><td>@Model.Profit.ToString("F2")</td></tr>
+    <tr><th>Margin per Unit</th><td>@Model.MarginPerUnit.ToString("F2")</td></tr>
+    <tr><th>ROI (%)</th><td>@Model.ROI.ToString("F2")</td></tr>
+    <tr><th>ROS (%)</th><td>@Model.ROS.ToString("F2")</td></tr>
+    <tr><th>Break-Even Point (units)</th><td>@Model.BreakEven.ToString("F0")</td></tr>
+</table>
 
-<p><a asp-action="List">Back to List</a></p>
+<br />
+<a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+<a asp-action="Delete" asp-route-id="@Model.Id">Delete</a> |
+<a asp-action="List">← Back to List</a>

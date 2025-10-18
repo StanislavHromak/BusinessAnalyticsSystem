@@ -1,0 +1,23 @@
+﻿@{
+    var role = Context.Session.GetString("UserRole");
+}
+
+<h2>Welcome, @Context.Session.GetString("Username")!</h2>
+<p>Your role: <strong>@role</strong></p>
+
+@if (role == "Admin" || role == "Owner")
+{
+    <ul>
+        <li><a asp-controller="Analytics" asp-action="AddData">Add Financial Data</a></li>
+        <li><a asp-controller="Analytics" asp-action="List">View Financial Records</a></li>
+    </ul>
+}
+else if (role == "Investor")
+{
+    <ul>
+        <li><a asp-controller="Analytics" asp-action="List">View Financial Data</a></li>
+    </ul>
+}
+
+<a asp-action="Profile">My Profile</a> |
+<a asp-action="Logout">Logout</a>

@@ -1,20 +1,18 @@
 ﻿@model IEnumerable<BusinessAnalyticsSystem.Models.FinancialData>
 
-<h2>Financial Data Records</h2>
+<h2>Financial Data List</h2>
 
-<p>
-    <a class="btn btn-success" asp-action="AddData">➕ Add New Record</a>
-    <a class="btn btn-secondary" asp-controller="Home" asp-action="Index">🏠 Back to Dashboard</a>
-</p>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
+<table border="1" cellpadding="5">
+    <thead>
         <tr>
             <th>Date</th>
             <th>Revenue</th>
-            <th>Expenses</th>
+            <th>Gross Costs</th>
+            <th>Total Costs</th>
             <th>Profit</th>
             <th>ROI (%)</th>
+            <th>ROS (%)</th>
+            <th>Break-Even (units)</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -23,16 +21,20 @@
         {
             <tr>
                 <td>@item.Date.ToShortDateString()</td>
-                <td>@item.Revenue</td>
-                <td>@item.Expenses</td>
-                <td>@item.Profit</td>
+                <td>@item.Revenue.ToString("F2")</td>
+                <td>@item.GrossCosts.ToString("F2")</td>
+                <td>@item.TotalCosts.ToString("F2")</td>
+                <td>@item.Profit.ToString("F2")</td>
                 <td>@item.ROI.ToString("F2")</td>
+                <td>@item.ROS.ToString("F2")</td>
+                <td>@item.BreakEven.ToString("F0")</td>
                 <td>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<a asp-action="AddData">+ Add New Data</a>

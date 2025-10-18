@@ -1,0 +1,17 @@
+﻿<h2>Login</h2>
+
+<form asp-action="Login" method="post">
+    <table border="1" cellpadding="5">
+        <tr><td>Username:</td><td><input type="text" name="username" /></td></tr>
+        <tr><td>Password:</td><td><input type="password" name="password" /></td></tr>
+    </table>
+    <br />
+    <button type="submit">Login</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+
+<a asp-action="Register">Register</a>

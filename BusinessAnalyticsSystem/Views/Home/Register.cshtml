@@ -1,0 +1,24 @@
+﻿@model BusinessAnalyticsSystem.Models.User
+
+<h2>Register</h2>
+
+<form asp-action="Register">
+    <table border="1" cellpadding="5">
+        <tr><td>Username:</td><td><input asp-for="Username" /></td></tr>
+        <tr><td>Password:</td><td><input asp-for="Password" type="password" /></td></tr>
+        <tr><td>Email:</td><td><input asp-for="Email" type="email" /></td></tr>
+    </table>
+    <br />
+    <button type="submit">Register</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+@if (ViewBag.Message != null)
+{
+    <p style="color:green;">@ViewBag.Message</p>
+}
+
+<a asp-action="Login">Already have an account? Login</a>
