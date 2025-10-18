@@ -99,10 +99,12 @@ namespace BusinessAnalyticsSystem.Controllers
 
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
+
             return View(item);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
@@ -113,8 +115,10 @@ namespace BusinessAnalyticsSystem.Controllers
                 _context.FinancialDatas.Remove(item);
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(List));
         }
+
     }
 }
 
