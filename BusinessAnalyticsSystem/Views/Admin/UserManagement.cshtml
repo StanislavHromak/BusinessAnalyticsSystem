@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BusinessAnalyticsSystem.Models.User>
+
+<h2>User Management</h2>
+
+<table border="1" cellpadding="8" style="border-collapse:collapse;">
+    <thead>
+        <tr style="background-color:#f2f2f2;">
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.Username</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    @if (user.Role != "Admin")
+                    {
+                        <form asp-action="ChangeRole" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <select name="newRole">
+                                <option value="Investor" selected="@("Investor" == user.Role)">Investor</option>
+                                <option value="Owner" selected="@("Owner" == user.Role)">Owner</option>
+                            </select>
+                            <button type="submit">Change</button>
+                        </form>
+                        <form asp-action="DeleteUser" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@user.Id" />
+                            <button type="submit" onclick="return confirm('Delete user @user.Username?');">Delete</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
