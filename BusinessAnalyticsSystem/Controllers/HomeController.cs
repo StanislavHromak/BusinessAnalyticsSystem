@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using BusinessAnalyticsSystem.Data;
 using BusinessAnalyticsSystem.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessAnalyticsSystem.Controllers
 {
@@ -15,60 +14,89 @@ namespace BusinessAnalyticsSystem.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        // === Welcome Page ===
+        public IActionResult Index()
         {
-            var data = await _context.FinancialDatas
-                .OrderBy(d => d.Date)
-                .ToListAsync();
+            return View();
+        }
 
-            if (data.Any())
+        // === Registration (default role = Investor) ===
+        [HttpGet]
+        public IActionResult Register() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Register(User model)
+        {
+            if (ModelState.IsValid)
             {
-                // Останній запис (найновіший за датою)
-                var latest = data.Last();
-
-                // Якщо KPI збережені в базі — використовуємо їх, інакше обчислюємо на місці
-                double latestProfit = latest.Profit != 0 ? latest.Profit : latest.CalculateProfit();
-                double latestProfitMargin = latest.ProfitMargin != 0 ? latest.ProfitMargin : latest.CalculateProfitMargin();
-                double latestROI = latest.ROI != 0 ? latest.ROI : latest.CalculateROI();
-                double latestBreakEven = latest.BreakEven != 0 ? latest.BreakEven : latest.CalculateBreakEven();
-
-                ViewBag.Profit = latestProfit;
-                ViewBag.ProfitMargin = latestProfitMargin;
-                ViewBag.ROI = latestROI;
-                ViewBag.BreakEven = latestBreakEven;
-
-                // Середні по всіх записах (як додаткова аналітика)
-                ViewBag.AvgProfit = data.Average(d => d.Profit != 0 ? d.Profit : d.CalculateProfit());
-                ViewBag.AvgProfitMargin = data.Average(d => d.ProfitMargin != 0 ? d.ProfitMargin : d.CalculateProfitMargin());
-                ViewBag.AvgROI = data.Average(d => d.ROI != 0 ? d.ROI : d.CalculateROI());
-
-                // Прогноз: простий лінійний (середній приріст профіту)
-                if (data.Count > 1)
+                var exists = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+                if (exists != null)
                 {
-                    var profits = data.Select(d => d.Profit != 0 ? d.Profit : d.CalculateProfit()).ToList();
-                    var avgGrowth = (profits.Last() - profits.First()) / (data.Count - 1);
-                    ViewBag.ForecastedProfit = profits.Last() + avgGrowth;
-                }
-                else
-                {
-                    ViewBag.ForecastedProfit = null;
+                    ViewBag.Error = "User already exists.";
+                    return View(model);
                 }
 
-                // Recommendation (залишимо просту логіку на основі ROI)
-                ViewBag.Recommendation = latestROI > 10 ? "Рекомендується інвестувати далі." : "Зменшіть витрати для покращення ROI.";
+                model.Role = "Investor"; // default role
+                _context.Users.Add(model);
+                await _context.SaveChangesAsync();
 
-                // Дані для графіка (JSON для Chart.js) — використовуємо збережені значення, або обчислені
-                ViewBag.ChartData = new
-                {
-                    Labels = data.Select(d => d.Date.ToShortDateString()).ToArray(),
-                    Revenues = data.Select(d => d.Revenue).ToArray(),
-                    Expenses = data.Select(d => d.Expenses).ToArray(),
-                    Profits = data.Select(d => d.Profit != 0 ? d.Profit : d.CalculateProfit()).ToArray()
-                };
+                ViewBag.Message = "Registration successful. Please login.";
+                return RedirectToAction(nameof(Login));
             }
+            return View(model);
+        }
+
+        // === Login ===
+        [HttpGet]
+        public IActionResult Login() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
+
+            if (user != null)
+            {
+                HttpContext.Session.SetString("Username", user.Username);
+                HttpContext.Session.SetInt32("UserId", user.Id);
+                HttpContext.Session.SetString("UserRole", user.Role);
+                return RedirectToAction("Dashboard");
+            }
+
+            ViewBag.Error = "Invalid credentials.";
+            return View();
+        }
+
+        // === Logout ===
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // === Profile ===
+        public async Task<IActionResult> Profile()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (username == null) return RedirectToAction(nameof(Login));
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return View(user);
+        }
+
+        // === Dashboard ===
+        public IActionResult Dashboard()
+        {
+            if (HttpContext.Session.GetString("Username") == null)
+                return RedirectToAction(nameof(Login));
 
             return View();
         }
+
+        // === Access Denied ===
+        public IActionResult AccessDenied() => View();
     }
 }
+
 

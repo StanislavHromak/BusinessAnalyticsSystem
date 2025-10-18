@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using BusinessAnalyticsSystem.Data;
 using BusinessAnalyticsSystem.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BusinessAnalyticsSystem.Controllers
 {
@@ -14,19 +14,28 @@ namespace BusinessAnalyticsSystem.Controllers
             _context = context;
         }
 
+        private bool CheckAccess(params string[] roles)
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return role != null && roles.Contains(role);
+        }
+
         // ==== CREATE ====
         [HttpGet]
         public IActionResult AddData()
         {
+            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> AddData(FinancialData model)
         {
+            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
+
             if (ModelState.IsValid)
             {
-                model.CalculateAllKPI(); // автообчислення KPI
+                model.CalculateKPI();
                 _context.FinancialDatas.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(List));
@@ -37,6 +46,9 @@ namespace BusinessAnalyticsSystem.Controllers
         // ==== READ ====
         public async Task<IActionResult> List()
         {
+            if (!CheckAccess("Admin", "Owner", "Investor"))
+                return RedirectToAction("AccessDenied", "Home");
+
             var data = await _context.FinancialDatas
                 .OrderByDescending(d => d.Date)
                 .ToListAsync();
@@ -45,6 +57,9 @@ namespace BusinessAnalyticsSystem.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
+            if (!CheckAccess("Admin", "Owner", "Investor"))
+                return RedirectToAction("AccessDenied", "Home");
+
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
             return View(item);
@@ -54,6 +69,8 @@ namespace BusinessAnalyticsSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
+            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
+
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
             return View(item);
@@ -62,9 +79,11 @@ namespace BusinessAnalyticsSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(FinancialData model)
         {
+            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
+
             if (ModelState.IsValid)
             {
-                model.CalculateAllKPI();
+                model.CalculateKPI();
                 _context.FinancialDatas.Update(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(List));
@@ -76,6 +95,8 @@ namespace BusinessAnalyticsSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
+            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
+
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
             return View(item);
@@ -84,6 +105,8 @@ namespace BusinessAnalyticsSystem.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
+
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item != null)
             {
@@ -92,13 +115,6 @@ namespace BusinessAnalyticsSystem.Controllers
             }
             return RedirectToAction(nameof(List));
         }
-
-        // ==== API ====
-        [HttpGet("api/data")]
-        public async Task<IActionResult> GetData()
-        {
-            var data = await _context.FinancialDatas.ToListAsync();
-            return Ok(data);
-        }
     }
 }
+
