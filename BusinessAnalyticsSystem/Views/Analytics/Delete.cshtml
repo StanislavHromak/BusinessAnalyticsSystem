@@ -11,7 +11,8 @@
     <tr><th>ROI (%)</th><td>@Model.ROI.ToString("F2")</td></tr>
 </table>
 
-<form asp-action="DeleteConfirmed">
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <br />
     <button type="submit" style="color:red;">Delete</button>

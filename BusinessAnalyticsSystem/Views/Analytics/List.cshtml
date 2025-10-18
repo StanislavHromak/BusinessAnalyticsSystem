@@ -1,10 +1,15 @@
 ﻿@model IEnumerable<BusinessAnalyticsSystem.Models.FinancialData>
 
+@{
+    ViewData["Title"] = "Financial Data List";
+    var role = Context.Session.GetString("UserRole");
+}
+
 <h2>Financial Data List</h2>
 
-<table border="1" cellpadding="5">
+<table border="1" cellpadding="6" style="border-collapse:collapse; width:90%;">
     <thead>
-        <tr>
+        <tr style="background-color:#f2f2f2;">
             <th>Date</th>
             <th>Revenue</th>
             <th>Gross Costs</th>
@@ -29,12 +34,25 @@
                 <td>@item.ROS.ToString("F2")</td>
                 <td>@item.BreakEven.ToString("F0")</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @* --- Investor only sees Details --- *@
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+
+                    @if (role == "Admin" || role == "Owner")
+                    {
+                        <span> | </span>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <span> | </span>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="AddData">+ Add New Data</a>
+<br />
+
+@if (role == "Admin" || role == "Owner")
+{
+    <a asp-action="AddData" style="font-weight:bold;">+ Add New Data</a>
+}

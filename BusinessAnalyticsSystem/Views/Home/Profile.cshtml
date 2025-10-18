@@ -1,18 +1,28 @@
 ﻿@model BusinessAnalyticsSystem.Models.User
 
-<h2>User Profile</h2>
+<h2>My Profile</h2>
 
-@if (Model != null)
+@if (ViewBag.Message != null)
 {
-    <table border="1" cellpadding="5">
-        <tr><th>Username</th><td>@Model.Username</td></tr>
-        <tr><th>Email</th><td>@Model.Email</td></tr>
+    <p style="color:green">@ViewBag.Message</p>
+}
+
+<form asp-action="Profile" method="post">
+    <table cellpadding="5">
+        <tr>
+            <td>Username:</td>
+            <td><input asp-for="Username" /></td>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td><input asp-for="Email" type="email" required /></td>
+        </tr>
+        <tr>
+            <td>New Password:</td>
+            <td><input asp-for="Password" type="password" placeholder="Enter new password (optional)" /></td>
+        </tr>
     </table>
-    <br/>
-    <a asp-action="Dashboard">Back to Dashboard</a>
-    <a asp-action="Logout">Logout</a>
-}
-else
-{
-    <p>No profile data available.</p>
-}
+    <br />
+    <button type="submit">Save Changes</button>
+    <a asp-action="Dashboard">Back</a>
+</form>
