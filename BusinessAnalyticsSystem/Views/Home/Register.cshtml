@@ -5,7 +5,6 @@
 }
 
 <div class="container-fluid">
-    <!-- Header Section -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
@@ -22,7 +21,6 @@
         </div>
     </div>
 
-    <!-- Register Form Section -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
@@ -44,6 +42,7 @@
                             <i class="fas fa-check-circle me-2"></i>@ViewBag.Message
                         </div>
                     }
+
                     <form asp-action="Register" method="post">
                         <div class="row g-3">
                             <div class="col-12">
@@ -51,16 +50,37 @@
                                 <input asp-for="Username" class="form-control" />
                                 <span asp-validation-for="Username" class="text-danger"></span>
                             </div>
+
+                            <div class="col-12">
+                                <label asp-for="FullName" class="form-label fw-bold"></label>
+                                <input asp-for="FullName" class="form-control" />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
                             <div class="col-12">
                                 <label asp-for="Password" class="form-label fw-bold"></label>
                                 <input asp-for="Password" type="password" class="form-control" />
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
+
+                            <div class="col-12">
+                                <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Phone" class="form-label fw-bold"></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+
                             <div class="col-12">
                                 <label asp-for="Email" class="form-label fw-bold"></label>
                                 <input asp-for="Email" type="email" class="form-control" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
+
                             <div class="col-12 text-center mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg px-4">
                                     <i class="fas fa-user-plus me-2"></i>Register
@@ -73,7 +93,6 @@
         </div>
     </div>
 
-    <!-- Login Link -->
     <div class="row justify-content-center">
         <div class="col-lg-6 text-center">
             <a asp-action="Login" class="btn btn-outline-primary btn-lg px-4">

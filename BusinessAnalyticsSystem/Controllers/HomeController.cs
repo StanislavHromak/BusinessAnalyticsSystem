@@ -26,21 +26,16 @@ namespace BusinessAnalyticsSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (string.IsNullOrWhiteSpace(model.Email))
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Username == model.Username || u.Email == model.Email || u.Phone == model.Phone);
+
+                if (existingUser != null)
                 {
-                    ViewBag.Error = "Email is required.";
+                    ViewBag.Error = "User with this username, email, or phone already exists.";
                     return View(model);
                 }
 
-                var exists = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Username == model.Username);
-                if (exists != null)
-                {
-                    ViewBag.Error = "User already exists.";
-                    return View(model);
-                }
-
-                model.Role = "Investor"; // default role
+                model.Role = "Investor";
                 _context.Users.Add(model);
                 await _context.SaveChangesAsync();
 
@@ -50,6 +45,7 @@ namespace BusinessAnalyticsSystem.Controllers
 
             return View(model);
         }
+
 
         // === Login ===
         [HttpGet]
@@ -103,24 +99,32 @@ namespace BusinessAnalyticsSystem.Controllers
                 return RedirectToAction(nameof(Login));
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
             if (ModelState.IsValid)
             {
                 user.Username = model.Username;
+                user.FullName = model.FullName;
                 user.Email = model.Email;
+                user.Phone = model.Phone;
 
+                // Якщо користувач ввів новий пароль — оновлюємо
                 if (!string.IsNullOrWhiteSpace(model.Password))
                     user.Password = model.Password;
 
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
+                // Оновимо сесію (щоб збереглося нове ім’я, якщо воно змінилося)
+                HttpContext.Session.SetString("Username", user.Username);
+
                 ViewBag.Message = "Profile updated successfully!";
             }
 
             return View(user);
         }
+
 
         // === Dashboard ===
         public IActionResult Dashboard()

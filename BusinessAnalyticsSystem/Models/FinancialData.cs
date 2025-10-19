@@ -11,44 +11,49 @@ namespace BusinessAnalyticsSystem.Models
 
         // ===== User input =====
         [Display(Name = "Fixed Costs")]
+        [Range(0, double.MaxValue, ErrorMessage = "Value cannot be negative.")]
         public double FixedCosts { get; set; }
 
         [Display(Name = "Variable Cost per Unit")]
+        [Range(0, double.MaxValue, ErrorMessage = "Value cannot be negative.")]
         public double VariableCostPerUnit { get; set; }
 
         [Display(Name = "Price per Unit")]
+        [Range(0, double.MaxValue, ErrorMessage = "Value cannot be negative.")]
         public double PricePerUnit { get; set; }
 
         [Display(Name = "Units Sold")]
+        [Range(0, int.MaxValue, ErrorMessage = "Value cannot be negative.")]
         public int UnitsSold { get; set; }
 
         [Display(Name = "Investments")]
+        [Range(0, double.MaxValue, ErrorMessage = "Value cannot be negative.")]
         public double Investment { get; set; }
 
         // ===== Calculated fields =====
         [Display(Name = "Gross Costs")]
-        public double GrossCosts { get; set; } 
+        public double GrossCosts { get; set; }
 
         [Display(Name = "Total Costs")]
-        public double TotalCosts { get; set; } 
+        public double TotalCosts { get; set; }
 
         [Display(Name = "Revenue")]
-        public double Revenue { get; set; } 
+        public double Revenue { get; set; }
 
         [Display(Name = "Profit")]
-        public double Profit { get; set; } 
+        public double Profit { get; set; }
 
         [Display(Name = "Margin per Unit")]
         public double MarginPerUnit { get; set; }
 
         [Display(Name = "ROI (%)")]
-        public double ROI { get; set; } 
+        public double ROI { get; set; }
 
         [Display(Name = "ROS (%)")]
-        public double ROS { get; set; } 
+        public double ROS { get; set; }
 
         [Display(Name = "Break-Even Point (units)")]
-        public double BreakEven { get; set; } 
+        public double BreakEven { get; set; }
 
         public void CalculateKPI()
         {
@@ -65,4 +70,5 @@ namespace BusinessAnalyticsSystem.Models
         }
     }
 }
+
 

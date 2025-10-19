@@ -1,5 +1,6 @@
 using BusinessAnalyticsSystem.Data;
 using Microsoft.EntityFrameworkCore;
+using BusinessAnalyticsSystem.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,11 +52,13 @@ using (var scope = app.Services.CreateScope())
 
     if (!db.Users.Any(u => u.Role == "Admin"))
     {
-        var admin = new BusinessAnalyticsSystem.Models.User
+        var admin = new User
         {
             Username = "admin",
-            Password = "admin123", 
+            FullName = "System Administrator",
+            Password = "Admin@123", 
             Email = "admin@system.com",
+            Phone = "+380000000000",
             Role = "Admin"
         };
         db.Users.Add(admin);
@@ -64,3 +67,4 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+

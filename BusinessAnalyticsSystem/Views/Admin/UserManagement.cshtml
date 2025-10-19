@@ -38,7 +38,9 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Username</th>
+                                    <th scope="col">Full Name</th>
                                     <th scope="col">Email</th>
+                                    <th scope="col">Phone</th>
                                     <th scope="col">Role</th>
                                     <th scope="col">Actions</th>
                                 </tr>
@@ -49,7 +51,9 @@
                                     <tr>
                                         <td>@user.Id</td>
                                         <td>@user.Username</td>
+                                        <td>@user.FullName</td>
                                         <td>@user.Email</td>
+                                        <td>@user.Phone</td>
                                         <td>@user.Role</td>
                                         <td>
                                             @if (user.Role != "Admin")
