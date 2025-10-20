@@ -1,5 +1,7 @@
 using BusinessAnalyticsSystem.Data;
 using BusinessAnalyticsSystem.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,62 +9,71 @@ namespace BusinessAnalyticsSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public HomeController(AppDbContext context)
+        public HomeController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        // === Welcome Page ===
-        public IActionResult Index() => View();
-
-        // === Registration (default role = Investor) ===
         [HttpGet]
-        public IActionResult Register() => View();
+        [AllowAnonymous]
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Register() => View(new RegisterView());
 
         [HttpPost]
-        public async Task<IActionResult> Register(User model)
+        public async Task<IActionResult> Register(RegisterView model)
         {
             if (ModelState.IsValid)
             {
-                var existingUser = await _context.Users
-                    .FirstOrDefaultAsync(u => u.Username == model.Username || u.Email == model.Email || u.Phone == model.Phone);
+                var existingUser = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.UserName == model.UserName || u.Email == model.Email || u.PhoneNumber == model.PhoneNumber);
 
                 if (existingUser != null)
                 {
-                    ViewBag.Error = "User with this username, email, or phone already exists.";
+                    ModelState.AddModelError(string.Empty, "User with this username, email, or phone already exists.");
                     return View(model);
                 }
 
-                model.Role = "Investor";
-                _context.Users.Add(model);
-                await _context.SaveChangesAsync();
+                var user = new User
+                {
+                    UserName = model.UserName,
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber
+                };
 
-                ViewBag.Message = "Registration successful. Please log in.";
-                return RedirectToAction(nameof(Login));
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Investor");
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction(nameof(Dashboard));
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
-
             return View(model);
         }
 
-
-        // === Login ===
         [HttpGet]
         public IActionResult Login() => View();
 
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
-
-            if (user != null)
+            var result = await _signInManager.PasswordSignInAsync(username, password, isPersistent: false, lockoutOnFailure: false);
+            if (result.Succeeded)
             {
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("UserRole", user.Role);
-
                 return RedirectToAction(nameof(Dashboard));
             }
 
@@ -70,74 +81,80 @@ namespace BusinessAnalyticsSystem.Controllers
             return View();
         }
 
-        // === Logout ===
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear();
+            await _signInManager.SignOutAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // === Profile ===
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Profile()
         {
-            var username = HttpContext.Session.GetString("Username");
-            if (username == null)
-                return RedirectToAction(nameof(Login));
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound();
 
-            return View(user);
+            var model = new ProfileView
+            {
+                UserName = user.UserName,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+            return View(model);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Profile(User model)
+        public async Task<IActionResult> Profile(ProfileView model)
         {
-            var username = HttpContext.Session.GetString("Username");
-            if (username == null)
-                return RedirectToAction(nameof(Login));
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user == null)
-                return NotFound();
-
             if (ModelState.IsValid)
             {
-                user.Username = model.Username;
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null) return NotFound();
+
+                user.UserName = model.UserName;
                 user.FullName = model.FullName;
                 user.Email = model.Email;
-                user.Phone = model.Phone;
+                user.PhoneNumber = model.PhoneNumber;
 
-                // Якщо користувач ввів новий пароль — оновлюємо
-                if (!string.IsNullOrWhiteSpace(model.Password))
-                    user.Password = model.Password;
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    foreach (var error in updateResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
 
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-
-                // Оновимо сесію (щоб збереглося нове ім’я, якщо воно змінилося)
-                HttpContext.Session.SetString("Username", user.Username);
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    var passwordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);  
+                    if (!passwordResult.Succeeded)
+                    {
+                        foreach (var error in passwordResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View(model);
+                    }
+                }
 
                 ViewBag.Message = "Profile updated successfully!";
+                return View(model);
             }
-
-            return View(user);
+            return View(model);
         }
 
-
-        // === Dashboard ===
+        [Authorize]
         public IActionResult Dashboard()
         {
-            if (HttpContext.Session.GetString("Username") == null)
-                return RedirectToAction(nameof(Login));
-
             return View();
         }
 
         public IActionResult AccessDenied() => View();
     }
 }
-
 
 

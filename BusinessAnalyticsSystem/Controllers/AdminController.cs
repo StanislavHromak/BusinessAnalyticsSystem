@@ -1,65 +1,55 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using BusinessAnalyticsSystem.Data;
+﻿using BusinessAnalyticsSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using BusinessAnalyticsSystem.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
-namespace BusinessAnalyticsSystem.Controllers
+[Authorize(Roles = "Admin")]
+public class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole<int>> _roleManager;
+
+    public AdminController(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
     {
-        private readonly AppDbContext _context;
+        _userManager = userManager;
+        _roleManager = roleManager;
+    }
 
-        public AdminController(AppDbContext context)
+    public async Task<IActionResult> UserManagement()
+    {
+        var users = await _userManager.Users.ToListAsync();
+        var viewModels = new List<UserView>();
+        foreach (var user in users)
         {
-            _context = context;
+            var roles = await _userManager.GetRolesAsync(user);
+            viewModels.Add(new UserView { User = user, Role = roles.FirstOrDefault() ?? "No Role" });
         }
+        return View(viewModels);
+    }
 
-        // Check if current user is Admin
-        private bool IsAdmin()
+    [HttpPost]
+    public async Task<IActionResult> ChangeRole(int id, string newRole)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (user == null) return NotFound();
+
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        await _userManager.AddToRoleAsync(user, newRole);
+
+        return RedirectToAction(nameof(UserManagement));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (user != null)
         {
-            return HttpContext.Session.GetString("UserRole") == "Admin";
+            await _userManager.DeleteAsync(user);
         }
-
-        // === List of users ===
-        public async Task<IActionResult> UserManagement()
-        {
-            if (!IsAdmin()) return RedirectToAction("AccessDenied", "Home");
-
-            var users = await _context.Users.ToListAsync();
-            return View(users);
-        }
-
-        // === Change user role ===
-        [HttpPost]
-        public async Task<IActionResult> ChangeRole(int id, string newRole)
-        {
-            if (!IsAdmin()) return RedirectToAction("AccessDenied", "Home");
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return NotFound();
-
-            user.Role = newRole;
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(UserManagement));
-        }
-
-        // === Delete user ===
-        [HttpPost]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            if (!IsAdmin()) return RedirectToAction("AccessDenied", "Home");
-
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
-            {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToAction(nameof(UserManagement));
-        }
+        return RedirectToAction(nameof(UserManagement));
     }
 }
 

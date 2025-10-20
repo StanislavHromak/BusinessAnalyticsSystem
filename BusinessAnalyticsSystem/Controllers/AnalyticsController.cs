@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BusinessAnalyticsSystem.Data;
 using BusinessAnalyticsSystem.Models;
 
 namespace BusinessAnalyticsSystem.Controllers
 {
+    [Authorize] 
     public class AnalyticsController : Controller
     {
         private readonly AppDbContext _context;
@@ -14,25 +16,18 @@ namespace BusinessAnalyticsSystem.Controllers
             _context = context;
         }
 
-        private bool CheckAccess(params string[] roles)
-        {
-            var role = HttpContext.Session.GetString("UserRole");
-            return role != null && roles.Contains(role);
-        }
-
         // ==== CREATE ====
+        [Authorize(Roles = "Admin,Owner")]
         [HttpGet]
         public IActionResult AddData()
         {
-            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
             return View();
         }
 
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         public async Task<IActionResult> AddData(FinancialData model)
         {
-            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
-
             if (ModelState.IsValid)
             {
                 model.CalculateKPI();
@@ -44,43 +39,37 @@ namespace BusinessAnalyticsSystem.Controllers
         }
 
         // ==== READ ====
+        [Authorize(Roles = "Admin,Owner,Investor")]
         public async Task<IActionResult> List()
         {
-            if (!CheckAccess("Admin", "Owner", "Investor"))
-                return RedirectToAction("AccessDenied", "Home");
-
             var data = await _context.FinancialDatas
                 .OrderByDescending(d => d.Date)
                 .ToListAsync();
             return View(data);
         }
 
+        [Authorize(Roles = "Admin,Owner,Investor")]
         public async Task<IActionResult> Details(int id)
         {
-            if (!CheckAccess("Admin", "Owner", "Investor"))
-                return RedirectToAction("AccessDenied", "Home");
-
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
             return View(item);
         }
 
         // ==== UPDATE ====
+        [Authorize(Roles = "Admin,Owner")]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
-
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
             return View(item);
         }
 
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         public async Task<IActionResult> Edit(FinancialData model)
         {
-            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
-
             if (ModelState.IsValid)
             {
                 model.CalculateKPI();
@@ -92,23 +81,21 @@ namespace BusinessAnalyticsSystem.Controllers
         }
 
         // ==== DELETE ====
+        [Authorize(Roles = "Admin,Owner")]
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
-
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
 
             return View(item);
         }
 
+        [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!CheckAccess("Admin", "Owner")) return RedirectToAction("AccessDenied", "Home");
-
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item != null)
             {
@@ -118,7 +105,6 @@ namespace BusinessAnalyticsSystem.Controllers
 
             return RedirectToAction(nameof(List));
         }
-
     }
 }
 
