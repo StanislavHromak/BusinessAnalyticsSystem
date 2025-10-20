@@ -1,10 +1,11 @@
-﻿@model BusinessAnalyticsSystem.Models.User
+﻿@model BusinessAnalyticsSystem.Models.RegisterView
 
 @{
     ViewData["Title"] = "Register";
 }
 
 <div class="container-fluid">
+    <!-- Header Section (unchanged) -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
@@ -12,43 +13,32 @@
                     <div class="mb-3">
                         <i class="fas fa-user-plus fa-3x text-dark mb-3"></i>
                     </div>
-                    <h1 class="display-5 fw-bold text-dark mb-3">Register</h1>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Create Account</h1>
                     <p class="lead text-muted mb-4">
-                        Create a new account to access the Business Analytics System.
+                        Join our platform for advanced financial analytics.
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Registration Form Section -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-light border-0">
                     <h5 class="mb-0 text-center">
-                        <i class="fas fa-user-plus me-2"></i>Create Account
+                        <i class="fas fa-file-alt me-2"></i>Registration Form
                     </h5>
                 </div>
                 <div class="card-body p-4">
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger text-center" role="alert">
-                            <i class="fas fa-exclamation-circle me-2"></i>@ViewBag.Error
-                        </div>
-                    }
-                    @if (ViewBag.Message != null)
-                    {
-                        <div class="alert alert-success text-center" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>@ViewBag.Message
-                        </div>
-                    }
-
                     <form asp-action="Register" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>  <!-- Додайте для показу помилок -->
                         <div class="row g-3">
                             <div class="col-12">
-                                <label asp-for="Username" class="form-label fw-bold"></label>
-                                <input asp-for="Username" class="form-control" />
-                                <span asp-validation-for="Username" class="text-danger"></span>
+                                <label asp-for="UserName" class="form-label fw-bold"></label>
+                                <input asp-for="UserName" class="form-control" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
 
                             <div class="col-12">
@@ -70,9 +60,9 @@
                             </div>
 
                             <div class="col-12">
-                                <label asp-for="Phone" class="form-label fw-bold"></label>
-                                <input asp-for="Phone" class="form-control" />
-                                <span asp-validation-for="Phone" class="text-danger"></span>
+                                <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
                             <div class="col-12">

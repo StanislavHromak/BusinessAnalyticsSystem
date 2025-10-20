@@ -1,6 +1,7 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Identity.UserManager<BusinessAnalyticsSystem.Models.User> UserManager
+
+@{
     ViewData["Title"] = "Dashboard";
-    var role = Context.Session.GetString("UserRole");
 }
 
 <div class="container-fluid">
@@ -12,9 +13,9 @@
                     <div class="mb-3">
                         <i class="fas fa-tachometer-alt fa-3x text-dark mb-3"></i>
                     </div>
-                    <h1 class="display-5 fw-bold text-dark mb-3">Welcome, @Context.Session.GetString("Username")!</h1>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Welcome, @User.Identity.Name!</h1>
                     <p class="lead text-muted mb-4">
-                        Your role: <strong>@role</strong>
+                        Your role: <strong>@string.Join(", ", (await UserManager.GetRolesAsync(await UserManager.GetUserAsync(User))))</strong>
                     </p>
                 </div>
             </div>
@@ -31,7 +32,7 @@
                     </h5>
                 </div>
                 <div class="card-body p-4">
-                    @if (role == "Admin" || role == "Owner")
+                    @if (User.IsInRole("Admin") || User.IsInRole("Owner"))
                     {
                         <ul class="list-unstyled text-center">
                             <li class="mb-3">
@@ -46,7 +47,7 @@
                             </li>
                         </ul>
                     }
-                    else if (role == "Investor")
+                    else if (User.IsInRole("Investor"))
                     {
                         <ul class="list-unstyled text-center">
                             <li>

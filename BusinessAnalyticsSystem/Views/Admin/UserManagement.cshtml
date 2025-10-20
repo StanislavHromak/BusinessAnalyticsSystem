@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BusinessAnalyticsSystem.Models.User>
+﻿@model IEnumerable<BusinessAnalyticsSystem.Models.UserView>
 
 @{
     ViewData["Title"] = "User Management";
@@ -46,23 +46,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var user in Model)
+                                @foreach (var viewModel in Model)
                                 {
+                                    var user = viewModel.User;
                                     <tr>
                                         <td>@user.Id</td>
-                                        <td>@user.Username</td>
+                                        <td>@user.UserName</td>
                                         <td>@user.FullName</td>
                                         <td>@user.Email</td>
-                                        <td>@user.Phone</td>
-                                        <td>@user.Role</td>
+                                        <td>@user.PhoneNumber</td>
+                                        <td>@viewModel.Role</td>
                                         <td>
-                                            @if (user.Role != "Admin")
+                                            @if (viewModel.Role != "Admin")
                                             {
                                                 <form asp-action="ChangeRole" method="post" class="d-inline-flex align-items-center gap-2">
                                                     <input type="hidden" name="id" value="@user.Id" />
                                                     <select name="newRole" class="form-select form-select-sm w-auto">
-                                                        <option value="Investor" selected="@("Investor" == user.Role)">Investor</option>
-                                                        <option value="Owner" selected="@("Owner" == user.Role)">Owner</option>
+                                                        <option value="Investor" selected="@("Investor" == viewModel.Role)">Investor</option>
+                                                        <option value="Owner" selected="@("Owner" == viewModel.Role)">Owner</option>
                                                     </select>
                                                     <button type="submit" class="btn btn-primary btn-sm">
                                                         <i class="fas fa-sync-alt me-1"></i>Change
@@ -70,7 +71,7 @@
                                                 </form>
                                                 <form asp-action="DeleteUser" method="post" class="d-inline">
                                                     <input type="hidden" name="id" value="@user.Id" />
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete user @user.Username?');">
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete user @user.UserName?');">
                                                         <i class="fas fa-trash-alt me-1"></i>Delete
                                                     </button>
                                                 </form>

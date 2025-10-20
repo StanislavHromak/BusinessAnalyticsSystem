@@ -1,4 +1,4 @@
-﻿@model BusinessAnalyticsSystem.Models.User
+﻿@model BusinessAnalyticsSystem.Models.ProfileView
 
 @{
     ViewData["Title"] = "My Profile";
@@ -39,11 +39,12 @@
                         </div>
                     }
                     <form asp-action="Profile" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>  <!-- Add for error display -->
                         <div class="row g-3">
                             <div class="col-12">
-                                <label asp-for="Username" class="form-label fw-bold"></label>
-                                <input asp-for="Username" class="form-control" />
-                                <span asp-validation-for="Username" class="text-danger"></span>
+                                <label asp-for="UserName" class="form-label fw-bold"></label>
+                                <input asp-for="UserName" class="form-control" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
                             <div class="col-12">
                                 <label asp-for="FullName" class="form-label fw-bold"></label>
@@ -52,9 +53,9 @@
                             </div>
 
                             <div class="col-12">
-                                <label asp-for="Phone" class="form-label fw-bold"></label>
-                                <input asp-for="Phone" class="form-control" />
-                                <span asp-validation-for="Phone" class="text-danger"></span>
+                                <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
 
                             <div class="col-12">
@@ -63,9 +64,19 @@
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                             <div class="col-12">
-                                <label asp-for="Password" class="form-label fw-bold"></label>
-                                <input asp-for="Password" type="password" class="form-control" placeholder="Enter new password (optional)" />
-                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <label asp-for="OldPassword" class="form-label fw-bold"></label>
+                                <input asp-for="OldPassword" type="password" class="form-control" placeholder="Enter current password" />
+                                <span asp-validation-for="OldPassword" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="NewPassword" class="form-label fw-bold"></label>
+                                <input asp-for="NewPassword" type="password" class="form-control" placeholder="Enter new password (optional)" />
+                                <span asp-validation-for="NewPassword" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="ConfirmNewPassword" class="form-label fw-bold"></label>
+                                <input asp-for="ConfirmNewPassword" type="password" class="form-control" placeholder="Confirm new password" />
+                                <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
                             </div>
                             <div class="col-12 text-center mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg px-4">
