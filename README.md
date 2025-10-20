@@ -126,6 +126,7 @@ For each financial record, the following metrics are calculated automatically:
 
 The project follows a standard ASP.NET Core MVC architecture with additional models for financial calculations and identity management.
 
+```plaintext
 BusinessAnalyticsSystem/
 │
 ├─ Controllers/
@@ -151,6 +152,7 @@ BusinessAnalyticsSystem/
 ├─ wwwroot/ # Static files (CSS, JS, fonts)
 ├─ Program.cs # Application entry point and service configuration
 └─ appsettings.json # App configuration
+```
 
 ---
 
@@ -166,7 +168,12 @@ The system implements role-based access control (RBAC) using ASP.NET Core Identi
 
 ## Contacts
 
-- GitHub: https://github.com/StanislavHromak
-
-- Email: gromakstanislav@knu.ua
+**GitHub:** 
+- https://github.com/StanislavHromak
+- https://github.com/Macksym-Savchenko
+  
+**Email:** 
+- gromakstanislav@knu.ua
+- macksymsavchenko@knu.ua
+         
 
