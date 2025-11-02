@@ -5,7 +5,6 @@
 }
 
 <div class="container-fluid">
-    <!-- Header Section -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
@@ -22,7 +21,6 @@
         </div>
     </div>
 
-    <!-- Actions Section -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
@@ -62,13 +60,12 @@
         </div>
     </div>
 
-    <!-- Profile and Logout Links -->
     <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
-            <a asp-action="Profile" class="btn btn-outline-primary btn-lg px-4 me-2">
+            <a asp-controller="User" asp-action="Profile" class="btn btn-outline-primary btn-lg px-4 me-2">
                 <i class="fas fa-user me-2"></i>My Profile
             </a>
-            <a asp-action="Logout" class="btn btn-outline-danger btn-lg px-4">
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-lg px-4">
                 <i class="fas fa-sign-out-alt me-2"></i>Logout
             </a>
         </div>

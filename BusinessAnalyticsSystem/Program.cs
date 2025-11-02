@@ -20,7 +20,7 @@ builder.Services.AddOpenIddict()
     .AddCore(options => options.UseEntityFrameworkCore().UseDbContext<AppDbContext>())
     .AddServer(options =>
     {
-        // Enable OAuth2/OpenID Connect endpoints (plural Uris for all versions)
+        // Enable OAuth2/OpenID Connect endpoints 
         options.SetAuthorizationEndpointUris("connect/authorize")
                .SetTokenEndpointUris("connect/token")
                .SetUserInfoEndpointUris("connect/userinfo")

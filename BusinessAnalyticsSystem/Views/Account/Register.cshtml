@@ -5,7 +5,6 @@
 }
 
 <div class="container-fluid">
-    <!-- Header Section (unchanged) -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
@@ -22,7 +21,6 @@
         </div>
     </div>
 
-    <!-- Registration Form Section -->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm">
@@ -33,7 +31,7 @@
                 </div>
                 <div class="card-body p-4">
                     <form asp-action="Register" method="post">
-                        <div asp-validation-summary="All" class="text-danger"></div>  <!-- Додайте для показу помилок -->
+                        <div asp-validation-summary="All" class="text-danger"></div>  
                         <div class="row g-3">
                             <div class="col-12">
                                 <label asp-for="UserName" class="form-label fw-bold"></label>
