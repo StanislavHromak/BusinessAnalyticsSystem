@@ -19,11 +19,11 @@ public class AdminController : Controller
     public async Task<IActionResult> UserManagement()
     {
         var users = await _userManager.Users.ToListAsync();
-        var viewModels = new List<UserView>();
+        var viewModels = new List<UserViewModel>();
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            viewModels.Add(new UserView { User = user, Role = roles.FirstOrDefault() ?? "No Role" });
+            viewModels.Add(new UserViewModel { User = user, Role = roles.FirstOrDefault() ?? "No Role" });
         }
         return View(viewModels);
     }

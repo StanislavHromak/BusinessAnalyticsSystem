@@ -23,6 +23,10 @@ namespace BusinessAnalyticsSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AnalysisRecommendation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("BreakEven")
                         .HasColumnType("REAL");
 

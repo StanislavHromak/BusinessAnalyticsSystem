@@ -6,135 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessAnalyticsSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_OpenIddict : Migration
+    public partial class InitialDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Users",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "Password",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "Role",
-                table: "Users");
-
-            migrationBuilder.RenameTable(
-                name: "Users",
-                newName: "AspNetUsers");
-
-            migrationBuilder.RenameColumn(
-                name: "Username",
-                table: "AspNetUsers",
-                newName: "UserName");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "UserName",
-                table: "AspNetUsers",
-                type: "TEXT",
-                maxLength: 256,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "TEXT",
-                oldMaxLength: 50);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Email",
-                table: "AspNetUsers",
-                type: "TEXT",
-                maxLength: 256,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
-
-            migrationBuilder.AddColumn<int>(
-                name: "AccessFailedCount",
-                table: "AspNetUsers",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<string>(
-                name: "ConcurrencyStamp",
-                table: "AspNetUsers",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "EmailConfirmed",
-                table: "AspNetUsers",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "LockoutEnabled",
-                table: "AspNetUsers",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<DateTimeOffset>(
-                name: "LockoutEnd",
-                table: "AspNetUsers",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "NormalizedEmail",
-                table: "AspNetUsers",
-                type: "TEXT",
-                maxLength: 256,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "NormalizedUserName",
-                table: "AspNetUsers",
-                type: "TEXT",
-                maxLength: 256,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "PasswordHash",
-                table: "AspNetUsers",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "PhoneNumber",
-                table: "AspNetUsers",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "PhoneNumberConfirmed",
-                table: "AspNetUsers",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<string>(
-                name: "SecurityStamp",
-                table: "AspNetUsers",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "TwoFactorEnabled",
-                table: "AspNetUsers",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_AspNetUsers",
-                table: "AspNetUsers",
-                column: "Id");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -151,64 +27,57 @@ namespace BusinessAnalyticsSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
+                name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
-                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                    FullName = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: false),
+                    UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
+                name: "FinancialDatas",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    FixedCosts = table.Column<double>(type: "REAL", nullable: false),
+                    VariableCostPerUnit = table.Column<double>(type: "REAL", nullable: false),
+                    PricePerUnit = table.Column<double>(type: "REAL", nullable: false),
+                    UnitsSold = table.Column<int>(type: "INTEGER", nullable: false),
+                    Investment = table.Column<double>(type: "REAL", nullable: false),
+                    GrossCosts = table.Column<double>(type: "REAL", nullable: false),
+                    TotalCosts = table.Column<double>(type: "REAL", nullable: false),
+                    Revenue = table.Column<double>(type: "REAL", nullable: false),
+                    Profit = table.Column<double>(type: "REAL", nullable: false),
+                    MarginPerUnit = table.Column<double>(type: "REAL", nullable: false),
+                    ROI = table.Column<double>(type: "REAL", nullable: false),
+                    ROS = table.Column<double>(type: "REAL", nullable: false),
+                    BreakEven = table.Column<double>(type: "REAL", nullable: false),
+                    AnalysisRecommendation = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Value = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_FinancialDatas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -278,6 +147,47 @@ namespace BusinessAnalyticsSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ClaimType = table.Column<string>(type: "TEXT", nullable: true),
+                    ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
@@ -295,6 +205,26 @@ namespace BusinessAnalyticsSystem.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Value = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -359,17 +289,6 @@ namespace BusinessAnalyticsSystem.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -394,6 +313,17 @@ namespace BusinessAnalyticsSystem.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_OpenIddictApplications_ClientId",
@@ -448,6 +378,9 @@ namespace BusinessAnalyticsSystem.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "FinancialDatas");
+
+            migrationBuilder.DropTable(
                 name: "OpenIddictScopes");
 
             migrationBuilder.DropTable(
@@ -457,121 +390,13 @@ namespace BusinessAnalyticsSystem.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "OpenIddictAuthorizations");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictApplications");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_AspNetUsers",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "AccessFailedCount",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "ConcurrencyStamp",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "EmailConfirmed",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "LockoutEnabled",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "LockoutEnd",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "NormalizedEmail",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "NormalizedUserName",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "PasswordHash",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "PhoneNumber",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "PhoneNumberConfirmed",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "SecurityStamp",
-                table: "AspNetUsers");
-
-            migrationBuilder.DropColumn(
-                name: "TwoFactorEnabled",
-                table: "AspNetUsers");
-
-            migrationBuilder.RenameTable(
-                name: "AspNetUsers",
-                newName: "Users");
-
-            migrationBuilder.RenameColumn(
-                name: "UserName",
-                table: "Users",
-                newName: "Username");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                type: "TEXT",
-                maxLength: 50,
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "TEXT",
-                oldMaxLength: 256,
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Email",
-                table: "Users",
-                type: "TEXT",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "TEXT",
-                oldMaxLength: 256,
-                oldNullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Password",
-                table: "Users",
-                type: "TEXT",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Role",
-                table: "Users",
-                type: "TEXT",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Users",
-                table: "Users",
-                column: "Id");
         }
     }
 }

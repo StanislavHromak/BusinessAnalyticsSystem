@@ -55,6 +55,10 @@ namespace BusinessAnalyticsSystem.Models
         [Display(Name = "Break-Even Point (units)")]
         public double BreakEven { get; set; }
 
+        // ===== Analysis =====
+        [Display(Name = "Analysis & Recommendation")]
+        public string AnalysisRecommendation { get; set; }
+
         public void CalculateKPI()
         {
             Revenue = PricePerUnit * UnitsSold;
@@ -67,6 +71,34 @@ namespace BusinessAnalyticsSystem.Models
             BreakEven = (PricePerUnit - VariableCostPerUnit) > 0
                 ? FixedCosts / (PricePerUnit - VariableCostPerUnit)
                 : 0;
+            GenerateAnalysis();
+        }
+
+        private void GenerateAnalysis()
+        {
+            if (Profit <= 0)
+            {
+                if (BreakEven > 0 && UnitsSold < BreakEven)
+                {
+                    AnalysisRecommendation = "Увага: Збиток. Обсяг продажів нижчий за точку беззбитковості. Необхідно збільшити продажі або знизити змінні витрати.";
+                }
+                else
+                {
+                    AnalysisRecommendation = "Попередження: Збиток. Перегляньте структуру витрат (фіксовані та змінні) та цінову політику.";
+                }
+            }
+            else if (ROI < 5 && ROI > 0) // Припустимо, 5% - це низький поріг
+            {
+                AnalysisRecommendation = "Прибутково, але низька рентабельність інвестицій (ROI). Оцініть ефективність інвестицій або шукайте шляхи збільшення маржі.";
+            }
+            else if (ROS < 10 && ROS > 0) // Припустимо, 10% - низька рентабельність продажів
+            {
+                AnalysisRecommendation = "Прибутково, але низька рентабельність продажів (ROS). Аналізуйте маржинальність (MarginPerUnit) та загальні витрати.";
+            }
+            else
+            {
+                AnalysisRecommendation = "Здоровий стан: Бізнес прибутковий, продажі вищі за точку беззбитковості, а показники рентабельності (ROI, ROS) позитивні.";
+            }
         }
     }
 }

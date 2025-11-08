@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessAnalyticsSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251020075752_Cleanup_Phone_Field")]
-    partial class Cleanup_Phone_Field
+    [Migration("20251108160140_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,10 @@ namespace BusinessAnalyticsSystem.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("AnalysisRecommendation")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<double>("BreakEven")
                         .HasColumnType("REAL");

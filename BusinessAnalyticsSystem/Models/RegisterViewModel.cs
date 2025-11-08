@@ -2,7 +2,7 @@
 
 namespace BusinessAnalyticsSystem.Models
 {
-    public class ProfileView
+    public class RegisterViewModel
     {
         [Required]
         [StringLength(50, ErrorMessage = "Username cannot exceed 50 characters.")]
@@ -14,20 +14,17 @@ namespace BusinessAnalyticsSystem.Models
         [Display(Name = "Full Name")]
         public string FullName { get; set; }
 
+        [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Current Password")]
-        public string OldPassword { get; set; }
-
-        [DataType(DataType.Password)]
-        [Display(Name = "New Password (optional)")]
+        [Display(Name = "Password")]
         [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,16}$",
             ErrorMessage = "Password must be 8–16 characters, include at least 1 uppercase letter, 1 digit, and 1 special character.")]
-        public string NewPassword { get; set; }
+        public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm New Password")]
-        [Compare("NewPassword", ErrorMessage = "Passwords do not match.")]
-        public string ConfirmNewPassword { get; set; }
+        [Display(Name = "Confirm Password")]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; }
 
         [Required]
         [Display(Name = "Phone Number")]

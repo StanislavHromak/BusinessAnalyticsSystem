@@ -22,7 +22,7 @@ namespace BusinessAnalyticsSystem.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound();
 
-            var model = new ProfileView
+            var model = new ProfileViewModel
             {
                 UserName = user.UserName,
                 FullName = user.FullName,
@@ -34,7 +34,7 @@ namespace BusinessAnalyticsSystem.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Profile(ProfileView model)
+        public async Task<IActionResult> Profile(ProfileViewModel model)
         {
             if (ModelState.IsValid)
             {

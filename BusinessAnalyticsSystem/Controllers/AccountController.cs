@@ -17,10 +17,10 @@ namespace BusinessAnalyticsSystem.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register() => View(new RegisterView());
+        public IActionResult Register() => View(new RegisterViewModel());
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterView model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
