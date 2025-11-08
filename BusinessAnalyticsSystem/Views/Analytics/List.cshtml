@@ -22,6 +22,9 @@
                             <i class="fas fa-plus-circle me-2"></i>Add New Data
                         </a>
                     }
+                    <a asp-action="AnalysisReport" class="btn btn-outline-success btn-lg px-4">
+                        <i class="fas fa-chart-line me-2"></i>Analysis Report
+                    </a>
                 </div>
             </div>
         </div>
@@ -48,13 +51,14 @@
                                     <th scope="col">ROI (%)</th>
                                     <th scope="col">ROS (%)</th>
                                     <th scope="col">Break-Even (units)</th>
+                                    <th scope="col">Analysis</th>
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var item in Model)
                                 {
-                                    <tr>
+                                    <tr class="@(item.Profit < 0 ? "table-danger" : "")">
                                         <td>@item.Date.ToShortDateString()</td>
                                         <td>@item.Revenue.ToString("F2")</td>
                                         <td>@item.GrossCosts.ToString("F2")</td>
@@ -63,6 +67,7 @@
                                         <td>@item.ROI.ToString("F2")</td>
                                         <td>@item.ROS.ToString("F2")</td>
                                         <td>@item.BreakEven.ToString("F0")</td>
+                                        <td>@item.AnalysisRecommendation</td>
                                         <td>
                                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
                                                 <i class="fas fa-info-circle me-1"></i>Details

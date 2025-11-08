@@ -1,0 +1,174 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Analysis Report";
+    // Отримуємо поточний період, щоб знати, яку кнопку зробити активною
+    var currentPeriod = ViewData["CurrentPeriod"] as string ?? "Month";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container-fluid">
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10 text-center">
+            <div class="btn-group shadow-sm" role="group" aria-label="Period selection">
+
+                <a asp-action="AnalysisReport" asp-route-period="Month"
+                   class="btn @(currentPeriod == "Month" ? "btn-primary" : "btn-outline-primary") btn-lg px-4">
+                    <i class="fas fa-calendar-alt me-2"></i>За місяцями
+                </a>
+
+                <a asp-action="AnalysisReport" asp-route-period="Quarter"
+                   class="btn @(currentPeriod == "Quarter" ? "btn-primary" : "btn-outline-primary") btn-lg px-4">
+                    <i class="fas fa-calendar-plus me-2"></i>За кварталами
+                </a>
+
+                <a asp-action="AnalysisReport" asp-route-period="Year"
+                   class="btn @(currentPeriod == "Year" ? "btn-primary" : "btn-outline-primary") btn-lg px-4">
+                    <i class="fas fa-calendar-check me-2"></i>За роками
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-dollar-sign me-2"></i>Profit, Revenue & Costs Dynamics
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-percentage me-2"></i>Profitability Dynamics (ROI & ROS)
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <canvas id="profitabilityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <a asp-action="List" class="btn btn-outline-primary btn-lg px-4">
+                <i class="fas fa-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Перетворюємо дані з C# Model у JavaScript
+        const labels = @Html.Raw(Json.Serialize(Model.Labels));
+        const revenues = @Html.Raw(Json.Serialize(Model.Revenues));
+        const totalCosts = @Html.Raw(Json.Serialize(Model.TotalCosts));
+        const profits = @Html.Raw(Json.Serialize(Model.Profits));
+        const rois = @Html.Raw(Json.Serialize(Model.ROIs));
+        const ross = @Html.Raw(Json.Serialize(Model.ROSs));
+
+        // Налаштування Графіка 1 (Прибуток, Доходи, Витрати)
+        const ctxProfit = document.getElementById('profitChart');
+        new Chart(ctxProfit, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Profit',
+                        data: profits,
+                        borderColor: 'rgba(25, 135, 84, 1)', // Зелений
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Revenue',
+                        data: revenues,
+                        borderColor: 'rgba(13, 110, 253, 1)', // Синій
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Total Costs',
+                        data: totalCosts,
+                        borderColor: 'rgba(220, 53, 69, 1)', // Червоний
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Financial Dynamics (UAH)'
+                    }
+                }
+            }
+        });
+
+        // Налаштування Графіка 2 (ROI та ROS)
+        const ctxProfitability = document.getElementById('profitabilityChart');
+        new Chart(ctxProfitability, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'ROI (%)',
+                        data: rois,
+                        borderColor: 'rgba(255, 193, 7, 1)', // Жовтий
+                        tension: 0.1
+                    },
+                    {
+                        label: 'ROS (%)',
+                        data: ross,
+                        borderColor: 'rgba(13, 202, 240, 1)', // Бірюзовий
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Profitability Dynamics (%)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            // Додаємо знак %
+                            callback: function(value) {
+                                return value + ' %'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}
