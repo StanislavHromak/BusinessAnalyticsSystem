@@ -8,6 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+// Add API Controllers
+builder.Services.AddControllers();
+
+// Add CORS for Angular
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=analytics.db"));
 
@@ -63,11 +78,18 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Use CORS before authentication
+app.UseCors("AllowAngularApp");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSession();
 
+// Map API routes
+app.MapControllers();
+
+// Map MVC routes
 app.MapControllerRoute(
     name : "default",
     pattern : "{controller=Home}/{action=Index}/{id?}");
