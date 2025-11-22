@@ -1,0 +1,112 @@
+@{
+    ViewData["Title"] = "Generate Financial Data from Sales";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-sync-alt fa-3x text-success mb-3"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-dark mb-3">Generate Financial Data from Sales</h1>
+                    <p class="lead text-muted mb-4">
+                        Automatically generate Financial Data records by aggregating sales data for the selected date range.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0 text-center">
+                        <i class="fas fa-calendar-alt me-2"></i>Date Range Selection
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="GenerateFromSales" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label fw-bold">Start Date</label>
+                                <input type="date" name="startDate" id="startDate" class="form-control" 
+                                       value="@DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd")" />
+                                <small class="form-text text-muted">Select the start date for sales aggregation</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label fw-bold">End Date</label>
+                                <input type="date" name="endDate" id="endDate" class="form-control" 
+                                       value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <small class="form-text text-muted">Select the end date for sales aggregation</small>
+                            </div>
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Note:</strong> This will aggregate all sales data for each date in the selected range and create or update Financial Data records. 
+                                    Existing Financial Data records for these dates will be updated with new aggregated values.
+                                </div>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-success btn-lg px-4">
+                                    <i class="fas fa-sync-alt me-2"></i>Generate Financial Data
+                                </button>
+                                <a asp-action="List" class="btn btn-outline-secondary btn-lg px-4 ms-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-0">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>How It Works
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Revenue:</strong> Calculated as the sum of all TotalAmount from sales for each date
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Units Sold:</strong> Sum of all quantities from sales for each date
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Price per Unit:</strong> Average unit price calculated from sales data
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Variable Cost per Unit:</strong> Estimated as 60% of average unit price
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Fixed Costs:</strong> Estimated as 10% of total revenue
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Investment:</strong> Set to 0 (can be updated manually later)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>KPI Calculation:</strong> All financial KPIs (ROI, ROS, Break-Even, etc.) are automatically calculated
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -21,17 +21,17 @@ namespace BusinessAnalyticsSystem.Controllers
         [HttpGet]
         public IActionResult AddData()
         {
-            // Повертаємо нову ViewModel
+            // Return new ViewModel
             return View(new AddDataViewModel());
         }
 
         [Authorize(Roles = "Admin,Owner")]
         [HttpPost]
-        public async Task<IActionResult> AddData(AddDataViewModel viewModel) // (1) Приймаємо ViewModel
+        public async Task<IActionResult> AddData(AddDataViewModel viewModel) // (1) Accept ViewModel
         {
             if (ModelState.IsValid)
             {
-                // (2) Створюємо повну модель даних
+                // (2) Create full data model
                 var model = new FinancialData
                 {
                     Date = viewModel.Date,
@@ -42,16 +42,16 @@ namespace BusinessAnalyticsSystem.Controllers
                     Investment = viewModel.Investment
                 };
 
-                // (3) Викликаємо розрахунок
+                // (3) Call calculation
                 model.CalculateKPI();
 
-                // (4) Зберігаємо повну модель в БД
+                // (4) Save full model to database
                 _context.FinancialDatas.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(List));
             }
 
-            // (5) Повертаємо ViewModel у разі помилки
+            // (5) Return ViewModel in case of error
             return View(viewModel);
         }
 
@@ -70,6 +70,18 @@ namespace BusinessAnalyticsSystem.Controllers
         {
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
+
+            // Load related sales for this date if generated from sales
+            if (item.IsGeneratedFromSales)
+            {
+                var relatedSales = await _context.Sales
+                    .Include(s => s.Product)
+                    .Include(s => s.Department)
+                    .Where(s => s.SaleDateTime.Date == item.Date.Date)
+                    .ToListAsync();
+                item.RelatedSales = relatedSales;
+            }
+
             return View(item);
         }
 
@@ -78,11 +90,11 @@ namespace BusinessAnalyticsSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            // 1. Знаходимо оригінальну модель
+            // 1. Find original model
             var item = await _context.FinancialDatas.FindAsync(id);
             if (item == null) return NotFound();
 
-            // 2. Створюємо ViewModel і перекладаємо в неї дані
+            // 2. Create ViewModel and map data to it
             var viewModel = new EditDataViewModel
             {
                 Id = item.Id,
@@ -94,7 +106,7 @@ namespace BusinessAnalyticsSystem.Controllers
                 Investment = item.Investment
             };
 
-            // 3. Передаємо ViewModel у View
+            // 3. Pass ViewModel to View
             return View(viewModel);
         }
 
@@ -104,11 +116,11 @@ namespace BusinessAnalyticsSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. Знаходимо оригінальний запис у БД
+                // 1. Find original record in database
                 var model = await _context.FinancialDatas.FindAsync(viewModel.Id);
                 if (model == null) return NotFound();
 
-                // 2. Перекладаємо оновлені дані з ViewModel назад у модель БД
+                // 2. Map updated data from ViewModel back to database model
                 model.Date = viewModel.Date;
                 model.FixedCosts = viewModel.FixedCosts;
                 model.VariableCostPerUnit = viewModel.VariableCostPerUnit;
@@ -116,16 +128,16 @@ namespace BusinessAnalyticsSystem.Controllers
                 model.UnitsSold = viewModel.UnitsSold;
                 model.Investment = viewModel.Investment;
 
-                // 3. Перераховуємо KPI
+                // 3. Recalculate KPI
                 model.CalculateKPI();
 
-                // 4. Оновлюємо та зберігаємо
+                // 4. Update and save
                 _context.FinancialDatas.Update(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(List));
             }
 
-            // У разі помилки валідації повертаємо ViewModel
+            // In case of validation error, return ViewModel
             return View(viewModel);
         }
 
@@ -155,15 +167,15 @@ namespace BusinessAnalyticsSystem.Controllers
             return RedirectToAction(nameof(List));
         }
 
-        // ===== НОВА ДІЯ ДЛЯ АНАЛІТИЧНОГО ЗВІТУ =====
+        // ===== NEW ACTION FOR ANALYTICAL REPORT =====
         [Authorize(Roles = "Admin,Owner,Investor")]
         [HttpGet]
         public async Task<IActionResult> AnalysisReport(string period = "Month")
         {
             var dailyData = await _context.FinancialDatas.ToListAsync();
 
-            // Ми будемо використовувати "dynamic", щоб зберігати результат 
-            // групування, оскільки ключі (Key) будуть різними.
+            // We will use "dynamic" to store the grouping result
+            // since the keys (Key) will be different.
             dynamic aggregatedReport;
 
             switch (period)
@@ -184,7 +196,7 @@ namespace BusinessAnalyticsSystem.Controllers
 
                 case "Quarter":
                     aggregatedReport = dailyData
-                        // (d.Date.Month - 1) / 3 + 1 -- це формула для розрахунку кварталу
+                        // (d.Date.Month - 1) / 3 + 1 -- this is the formula for calculating the quarter
                         .GroupBy(d => new { d.Date.Year, Quarter = (d.Date.Month - 1) / 3 + 1 })
                         .OrderBy(g => g.Key.Year)
                         .ThenBy(g => g.Key.Quarter)
@@ -212,11 +224,11 @@ namespace BusinessAnalyticsSystem.Controllers
                             Profit = g.Sum(x => x.Profit),
                             Investment = g.Sum(x => x.Investment),
                         }).ToList();
-                    period = "Month"; // Встановлюємо значення за замовчуванням
+                    period = "Month"; // Set default value
                     break;
             }
 
-            // Перераховуємо KPI на основі згрупованих сум
+            // Recalculate KPI based on aggregated sums
             var finalReportData = (aggregatedReport as IEnumerable<dynamic>)
                 .Select(m => new
                 {
@@ -224,13 +236,13 @@ namespace BusinessAnalyticsSystem.Controllers
                     m.Revenue,
                     m.TotalCosts,
                     m.Profit,
-                    // Перераховуємо ROI та ROS на основі місячних підсумків
+                    // Recalculate ROI and ROS based on monthly summaries
                     ROI = m.Investment > 0 ? (m.Profit / m.Investment) * 100 : 0,
                     ROS = m.Revenue > 0 ? (m.Profit / m.Revenue) * 100 : 0
                 }).ToList();
 
 
-            // Готуємо дані для графіків
+            // Prepare data for charts
             var reportModel = new
             {
                 Labels = finalReportData.Select(d => d.Label),
@@ -241,10 +253,96 @@ namespace BusinessAnalyticsSystem.Controllers
                 ROSs = finalReportData.Select(d => d.ROS)
             };
 
-            // Передаємо поточний період у View, щоб "підсвітити" активну кнопку
+            // Pass current period to View to "highlight" active button
             ViewData["CurrentPeriod"] = period;
 
             return View(reportModel);
+        }
+
+        // ===== GENERATE FINANCIAL DATA FROM SALES =====
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpGet]
+        public IActionResult GenerateFromSales()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin,Owner")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateFromSales(DateTime? startDate, DateTime? endDate)
+        {
+            // Default to last 30 days if not specified
+            if (!startDate.HasValue)
+                startDate = DateTime.Now.AddDays(-30).Date;
+            if (!endDate.HasValue)
+                endDate = DateTime.Now.Date;
+
+            // Aggregate sales by date
+            var salesByDate = await _context.Sales
+                .Include(s => s.Product)
+                .Where(s => s.SaleDateTime.Date >= startDate.Value.Date && s.SaleDateTime.Date <= endDate.Value.Date)
+                .GroupBy(s => s.SaleDateTime.Date)
+                .ToListAsync();
+
+            int createdCount = 0;
+            int updatedCount = 0;
+
+            foreach (var group in salesByDate)
+            {
+                var date = group.Key;
+                var sales = group.ToList();
+
+                // Calculate aggregated values
+                var totalRevenue = (double)sales.Sum(s => s.TotalAmount);
+                var totalUnitsSold = sales.Sum(s => s.Quantity);
+                var avgUnitPrice = totalUnitsSold > 0 ? totalRevenue / totalUnitsSold : 0;
+
+                // Estimate costs (you can adjust these based on your business logic)
+                // For now, we'll use a simple estimation: variable cost = 60% of price, fixed cost = 10% of revenue
+                var estimatedVariableCostPerUnit = avgUnitPrice * 0.6;
+                var estimatedFixedCosts = totalRevenue * 0.1;
+                var estimatedInvestment = 0.0; // Can be set manually later
+
+                // Check if FinancialData already exists for this date
+                var existingFinancialData = await _context.FinancialDatas
+                    .FirstOrDefaultAsync(f => f.Date.Date == date);
+
+                if (existingFinancialData != null)
+                {
+                    // Update existing record
+                    existingFinancialData.PricePerUnit = avgUnitPrice;
+                    existingFinancialData.UnitsSold = totalUnitsSold;
+                    existingFinancialData.VariableCostPerUnit = estimatedVariableCostPerUnit;
+                    existingFinancialData.FixedCosts = estimatedFixedCosts;
+                    existingFinancialData.Investment = estimatedInvestment;
+                    existingFinancialData.IsGeneratedFromSales = true;
+                    existingFinancialData.CalculateKPI();
+                    updatedCount++;
+                }
+                else
+                {
+                    // Create new record
+                    var financialData = new FinancialData
+                    {
+                        Date = date,
+                        PricePerUnit = avgUnitPrice,
+                        UnitsSold = totalUnitsSold,
+                        VariableCostPerUnit = estimatedVariableCostPerUnit,
+                        FixedCosts = estimatedFixedCosts,
+                        Investment = estimatedInvestment,
+                        IsGeneratedFromSales = true
+                    };
+                    financialData.CalculateKPI();
+                    _context.FinancialDatas.Add(financialData);
+                    createdCount++;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Successfully generated Financial Data from Sales: {createdCount} created, {updatedCount} updated.";
+            return RedirectToAction(nameof(List));
         }
     }
 }

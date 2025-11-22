@@ -1,0 +1,135 @@
+@model BusinessAnalyticsSystem.Controllers.SearchViewModel
+
+@{
+    ViewData["Title"] = "Search Sales";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h2 class="mb-0"><i class="fas fa-search me-2"></i>Search Sales</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Search" method="post" asp-antiforgery="true">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StartDate" class="form-label">Start Date</label>
+                                <input asp-for="StartDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EndDate" class="form-label">End Date</label>
+                                <input asp-for="EndDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Categories (select one or more)</label>
+                                <select asp-for="SelectedCategoryIds" multiple class="form-select" size="5">
+                                    @foreach (var category in ViewBag.Categories as IEnumerable<BusinessAnalyticsSystem.Models.Category>)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Hold Ctrl to select multiple</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Departments (select one or more)</label>
+                                <select asp-for="SelectedDepartmentIds" multiple class="form-select" size="5">
+                                    @foreach (var department in ViewBag.Departments as IEnumerable<BusinessAnalyticsSystem.Models.Department>)
+                                    {
+                                        <option value="@department.Id">@department.Name</option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">Hold Ctrl to select multiple</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerNameStart" class="form-label">Customer Name (Start)</label>
+                                <input asp-for="CustomerNameStart" class="form-control" placeholder="Name start" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerNameEnd" class="form-label">Customer Name (End)</label>
+                                <input asp-for="CustomerNameEnd" class="form-control" placeholder="Name end" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ProductNameStart" class="form-label">Product Name (Start)</label>
+                                <input asp-for="ProductNameStart" class="form-control" placeholder="Product name start" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ProductNameEnd" class="form-label">Product Name (End)</label>
+                                <input asp-for="ProductNameEnd" class="form-control" placeholder="Product name end" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-redo me-2"></i>Clear
+                            </a>
+                        </div>
+                    </form>
+
+                    @if (Model?.Results != null && Model.Results.Any())
+                    {
+                        <hr />
+                        <h4>Search Results (@Model.Results.Count found)</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date & Time</th>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Department</th>
+                                        <th>Quantity</th>
+                                        <th>Amount</th>
+                                        <th>Customer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sale in Model.Results)
+                                    {
+                                        <tr>
+                                            <td>@sale.Id</td>
+                                            <td>@sale.SaleDateTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td><strong>@sale.Product?.Name</strong></td>
+                                            <td><span class="badge bg-info">@sale.Product?.Category?.Name</span></td>
+                                            <td>@sale.Department?.Name</td>
+                                            <td>@sale.Quantity</td>
+                                            <td><strong>@sale.TotalAmount.ToString("C")</strong></td>
+                                            <td>@sale.CustomerName</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else if (Model?.Results != null && !Model.Results.Any())
+                    {
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>No results found for the specified criteria.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

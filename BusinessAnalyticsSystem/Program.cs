@@ -1,5 +1,6 @@
 using BusinessAnalyticsSystem.Data;
 using BusinessAnalyticsSystem.Models;
+using BusinessAnalyticsSystem.Config;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
@@ -23,8 +24,8 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=analytics.db"));
+// Configure Database with support for 4 DB types
+DatabaseConfig.ConfigureDatabase(builder.Services, builder.Configuration);
 
 builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -97,7 +98,20 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    
+    // Apply migrations or create database
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch
+    {
+        // If migrations are not applied, create database
+        db.Database.EnsureCreated();
+    }
+    
+    // Populate with initial data
+    DbInitializer.Initialize(db);
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();

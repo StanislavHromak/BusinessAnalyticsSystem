@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BusinessAnalyticsSystem.Models
 {
@@ -8,6 +9,10 @@ namespace BusinessAnalyticsSystem.Models
 
         [DataType(DataType.Date)]
         public DateTime Date { get; set; } = DateTime.Now;
+
+        // Navigation property to related Sales (for aggregation)
+        [NotMapped]
+        public ICollection<Sale>? RelatedSales { get; set; }
 
         // ===== User input =====
         [Display(Name = "Fixed Costs")]
@@ -59,6 +64,10 @@ namespace BusinessAnalyticsSystem.Models
         [Display(Name = "Analysis & Recommendation")]
         public string AnalysisRecommendation { get; set; }
 
+        // Flag to indicate if this FinancialData was generated from Sales
+        [Display(Name = "Generated from Sales")]
+        public bool IsGeneratedFromSales { get; set; } = false;
+
         public void CalculateKPI()
         {
             Revenue = PricePerUnit * UnitsSold;
@@ -80,24 +89,24 @@ namespace BusinessAnalyticsSystem.Models
             {
                 if (BreakEven > 0 && UnitsSold < BreakEven)
                 {
-                    AnalysisRecommendation = "Увага: Збиток. Обсяг продажів нижчий за точку беззбитковості. Необхідно збільшити продажі або знизити змінні витрати.";
+                    AnalysisRecommendation = "Warning: Loss. Sales volume is below the break-even point. It is necessary to increase sales or reduce variable costs.";
                 }
                 else
                 {
-                    AnalysisRecommendation = "Попередження: Збиток. Перегляньте структуру витрат (фіксовані та змінні) та цінову політику.";
+                    AnalysisRecommendation = "Warning: Loss. Review the cost structure (fixed and variable) and pricing policy.";
                 }
             }
-            else if (ROI < 5 && ROI > 0) // Припустимо, 5% - це низький поріг
+            else if (ROI < 5 && ROI > 0) // Assume 5% is a low threshold
             {
-                AnalysisRecommendation = "Прибутково, але низька рентабельність інвестицій (ROI). Оцініть ефективність інвестицій або шукайте шляхи збільшення маржі.";
+                AnalysisRecommendation = "Profitable, but low return on investment (ROI). Evaluate investment efficiency or seek ways to increase margin.";
             }
-            else if (ROS < 10 && ROS > 0) // Припустимо, 10% - низька рентабельність продажів
+            else if (ROS < 10 && ROS > 0) // Assume 10% is low return on sales
             {
-                AnalysisRecommendation = "Прибутково, але низька рентабельність продажів (ROS). Аналізуйте маржинальність (MarginPerUnit) та загальні витрати.";
+                AnalysisRecommendation = "Profitable, but low return on sales (ROS). Analyze margin (MarginPerUnit) and total costs.";
             }
             else
             {
-                AnalysisRecommendation = "Здоровий стан: Бізнес прибутковий, продажі вищі за точку беззбитковості, а показники рентабельності (ROI, ROS) позитивні.";
+                AnalysisRecommendation = "Healthy state: Business is profitable, sales are above the break-even point, and profitability indicators (ROI, ROS) are positive.";
             }
         }
     }

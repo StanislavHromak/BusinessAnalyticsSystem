@@ -1,0 +1,68 @@
+@model BusinessAnalyticsSystem.Models.Sale
+
+@{
+    ViewData["Title"] = "Sale Details";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Sale Details</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">ID:</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Sale Date and Time:</dt>
+                        <dd class="col-sm-8"><strong>@Model.SaleDateTime.ToString("dd.MM.yyyy HH:mm:ss")</strong></dd>
+
+                        <dt class="col-sm-4">Product:</dt>
+                        <dd class="col-sm-8">
+                            <strong>@Model.Product?.Name</strong>
+                            @if (!string.IsNullOrEmpty(Model.Product?.Code))
+                            {
+                                <span class="badge bg-secondary">@Model.Product.Code</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Category:</dt>
+                        <dd class="col-sm-8"><span class="badge bg-info">@Model.Product?.Category?.Name</span></dd>
+
+                        <dt class="col-sm-4">Department:</dt>
+                        <dd class="col-sm-8">@Model.Department?.Name</dd>
+
+                        <dt class="col-sm-4">Department Manager:</dt>
+                        <dd class="col-sm-8">@Model.Department?.Manager</dd>
+
+                        <dt class="col-sm-4">Quantity:</dt>
+                        <dd class="col-sm-8">@Model.Quantity</dd>
+
+                        <dt class="col-sm-4">Unit Price:</dt>
+                        <dd class="col-sm-8">@Model.UnitPrice.ToString("C")</dd>
+
+                        <dt class="col-sm-4">Total Amount:</dt>
+                        <dd class="col-sm-8"><strong class="text-success">@Model.TotalAmount.ToString("C")</strong></dd>
+
+                        <dt class="col-sm-4">Customer:</dt>
+                        <dd class="col-sm-8">@(Model.CustomerName ?? "-")</dd>
+
+                        <dt class="col-sm-4">Notes:</dt>
+                        <dd class="col-sm-8">@(Model.Notes ?? "-")</dd>
+
+                        <dt class="col-sm-4">Created Date:</dt>
+                        <dd class="col-sm-8">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+                    </dl>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

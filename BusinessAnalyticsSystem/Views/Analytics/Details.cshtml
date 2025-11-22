@@ -38,6 +38,23 @@
                                     <td>@Model.Date.ToShortDateString()</td>
                                 </tr>
                                 <tr>
+                                    <th scope="row">Source</th>
+                                    <td>
+                                        @if (Model.IsGeneratedFromSales)
+                                        {
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-shopping-cart me-1"></i>Generated from Sales
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-edit me-1"></i>Manual Entry
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th scope="row">Fixed Costs</th>
                                     <td>@Model.FixedCosts.ToString("F2")</td>
                                 </tr>
@@ -96,6 +113,52 @@
             </div>
         </div>
     </div>
+
+    @if (Model.IsGeneratedFromSales && Model.RelatedSales != null && Model.RelatedSales.Any())
+    {
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light border-0">
+                        <h5 class="mb-0 text-center">
+                            <i class="fas fa-shopping-cart me-2"></i>Related Sales (@Model.RelatedSales.Count())
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Date & Time</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Department</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Unit Price</th>
+                                        <th scope="col">Total Amount</th>
+                                        <th scope="col">Customer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sale in Model.RelatedSales)
+                                    {
+                                        <tr>
+                                            <td>@sale.SaleDateTime.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@(sale.Product?.Name ?? "N/A")</td>
+                                            <td>@(sale.Department?.Name ?? "N/A")</td>
+                                            <td>@sale.Quantity</td>
+                                            <td>@sale.UnitPrice.ToString("F2")</td>
+                                            <td>@sale.TotalAmount.ToString("F2")</td>
+                                            <td>@(sale.CustomerName ?? "N/A")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
