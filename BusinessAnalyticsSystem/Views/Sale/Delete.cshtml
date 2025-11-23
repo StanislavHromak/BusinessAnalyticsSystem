@@ -1,0 +1,46 @@
+﻿@model BusinessAnalyticsSystem.Models.Sale
+
+@{
+    ViewData["Title"] = "Delete Sale";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Are you sure?</h4>
+        <p>You are about to delete the sale record for <strong>@Model.Product?.Name</strong> (Customer: @Model.CustomerName).</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Date</dt>
+                <dd class="col-sm-9">@Model.SaleDateTime.ToString("g")</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Product)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Product.Name)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Department)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Department.Name)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Quantity)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Quantity)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.TotalAmount)</dt>
+                <dd class="col-sm-9 fw-bold">@Html.DisplayFor(model => model.TotalAmount)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CustomerName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CustomerName)</dd>
+            </dl>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    <button type="submit" class="btn btn-danger">Delete Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+﻿@model BusinessAnalyticsSystem.Models.Department
+
+@{
+    ViewData["Title"] = "Delete Department";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Are you sure?</h4>
+        <p>You are about to delete the department <strong>@Model.Name</strong>. This action cannot be undone.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Manager)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Manager)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+            </dl>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
