@@ -12,7 +12,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">
-                        <i class="fas fa-file-invoice me-2"></i>Report for @Model.Date.ToString("MMMM yyyy")
+                        <i class="fas fa-file-invoice me-2"></i>Report for @Model.Date.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture)
                     </h2>
                 </div>
                 <div class="card-body">

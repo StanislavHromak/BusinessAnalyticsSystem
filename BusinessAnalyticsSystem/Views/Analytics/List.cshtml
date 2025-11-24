@@ -54,7 +54,7 @@
 
                                         <tr class="@rowClass">
                                             <td>
-                                                <strong>@item.Date.ToString("MMMM yyyy")</strong>
+                                                <strong>@item.Date.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture)</strong>
                                                 <div class="small text-muted">@item.Date.ToString("dd.MM.yyyy")</div>
                                             </td>
                                             <td>@item.Revenue.ToString("C0")</td>

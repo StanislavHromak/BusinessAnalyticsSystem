@@ -4,8 +4,14 @@ using BusinessAnalyticsSystem.Config;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Set default culture to English (US)
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddControllersWithViews();
 

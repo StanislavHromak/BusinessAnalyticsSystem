@@ -9,7 +9,7 @@
         <div class="col-md-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Data: @Model.Date.ToString("MMMM yyyy")</h5>
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Data: @Model.Date.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture)</h5>
                 </div>
                 <div class="card-body">
                     <form asp-action="Edit">

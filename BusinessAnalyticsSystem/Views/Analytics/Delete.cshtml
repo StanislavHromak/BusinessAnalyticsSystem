@@ -9,7 +9,7 @@
         <div class="col-md-8">
             <div class="alert alert-danger shadow-sm" role="alert">
                 <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion</h4>
-                <p>Are you sure you want to delete the financial record for <strong>@Model.Date.ToString("MMMM yyyy")</strong>? This action cannot be undone.</p>
+                <p>Are you sure you want to delete the financial record for <strong>@Model.Date.ToString("MMMM yyyy", System.Globalization.CultureInfo.InvariantCulture)</strong>? This action cannot be undone.</p>
             </div>
 
             <div class="card border-0 shadow-sm">
