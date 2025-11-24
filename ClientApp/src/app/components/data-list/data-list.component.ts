@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../services/analytics.service';
 import { FinancialData } from '../../models/financial-data.model';
 
@@ -29,6 +29,7 @@ import { FinancialData } from '../../models/financial-data.model';
               <th>Прибуток</th>
               <th>ROI</th>
               <th>ROS</th>
+              <th>Дії</th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +40,20 @@ import { FinancialData } from '../../models/financial-data.model';
               <td>{{ item.profit | number:'1.2-2' }} ₴</td>
               <td>{{ item.roi | number:'1.2-2' }}%</td>
               <td>{{ item.ros | number:'1.2-2' }}%</td>
+              <td>
+                <button 
+                  (click)="editItem(item.id)" 
+                  class="btn-edit"
+                  title="Редагувати">
+                  ✏️
+                </button>
+                <button 
+                  (click)="deleteItem(item.id)" 
+                  class="btn-delete"
+                  title="Видалити">
+                  🗑️
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -122,6 +137,28 @@ import { FinancialData } from '../../models/financial-data.model';
       background: #fee;
       border-radius: 8px;
     }
+
+    .btn-edit, .btn-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      margin: 0 0.25rem;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-edit:hover {
+      transform: scale(1.2);
+    }
+
+    .btn-delete:hover {
+      transform: scale(1.2);
+    }
+
+    .btn-edit:active, .btn-delete:active {
+      transform: scale(0.9);
+    }
   `]
 })
 export class DataListComponent implements OnInit {
@@ -129,7 +166,10 @@ export class DataListComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(
+    private analyticsService: AnalyticsService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadData();
@@ -149,6 +189,24 @@ export class DataListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  editItem(id: number) {
+    this.router.navigate(['/data/edit', id]);
+  }
+
+  deleteItem(id: number) {
+    if (confirm('Ви впевнені, що хочете видалити цей запис?')) {
+      this.analyticsService.deleteData(id).subscribe({
+        next: () => {
+          // Оновити список після видалення
+          this.loadData();
+        },
+        error: (err) => {
+          this.error = 'Помилка видалення: ' + (err.error?.message || err.message || 'Невідома помилка');
+        }
+      });
+    }
   }
 }
 

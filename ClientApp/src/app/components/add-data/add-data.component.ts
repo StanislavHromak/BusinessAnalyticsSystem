@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService } from '../../services/analytics.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-data',
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="add-data">
-      <h2>Додати нові дані</h2>
+      <h2>{{ isEditMode ? 'Редагувати дані' : 'Додати нові дані' }}</h2>
       
       <form (ngSubmit)="onSubmit()" #dataForm="ngForm">
         <div class="form-group">
@@ -96,7 +96,7 @@ import { Router } from '@angular/router';
             type="submit" 
             [disabled]="!dataForm.valid || loading" 
             class="btn btn-primary">
-            {{ loading ? 'Збереження...' : 'Зберегти' }}
+            {{ loading ? (isEditMode ? 'Оновлення...' : 'Збереження...') : (isEditMode ? 'Оновити' : 'Зберегти') }}
           </button>
           <button 
             type="button" 
@@ -207,14 +207,45 @@ export class AddDataComponent implements OnInit {
   loading = false;
   error: string | null = null;
   success: string | null = null;
+  isEditMode = false;
+  itemId: number | null = null;
 
   constructor(
     private analyticsService: AnalyticsService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    // Компонент готовий
+    // Перевірити, чи це режим редагування
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.isEditMode = true;
+        this.itemId = +params['id'];
+        this.loadDataForEdit(this.itemId);
+      }
+    });
+  }
+
+  loadDataForEdit(id: number) {
+    this.loading = true;
+    this.analyticsService.getDataById(id).subscribe({
+      next: (data) => {
+        this.formData = {
+          date: data.date,
+          fixedCosts: data.fixedCosts,
+          variableCostPerUnit: data.variableCostPerUnit,
+          pricePerUnit: data.pricePerUnit,
+          unitsSold: data.unitsSold,
+          investment: data.investment
+        };
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Помилка завантаження даних: ' + (err.error?.message || err.message || 'Невідома помилка');
+        this.loading = false;
+      }
+    });
   }
 
   onSubmit() {
@@ -222,21 +253,41 @@ export class AddDataComponent implements OnInit {
     this.error = null;
     this.success = null;
 
-    this.analyticsService.createData(this.formData).subscribe({
-      next: (data) => {
-        this.success = 'Дані успішно додані!';
-        this.loading = false;
-        
-        // Очистити форму через 2 секунди та перенаправити
-        setTimeout(() => {
-          this.router.navigate(['/data']);
-        }, 2000);
-      },
-      error: (err) => {
-        this.error = 'Помилка збереження: ' + (err.error?.message || err.message || 'Невідома помилка');
-        this.loading = false;
-      }
-    });
+    if (this.isEditMode && this.itemId) {
+      // Режим редагування
+      this.analyticsService.updateData(this.itemId, this.formData).subscribe({
+        next: (data) => {
+          this.success = 'Дані успішно оновлені!';
+          this.loading = false;
+          
+          // Перенаправити через 2 секунди
+          setTimeout(() => {
+            this.router.navigate(['/data']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.error = 'Помилка оновлення: ' + (err.error?.message || err.message || 'Невідома помилка');
+          this.loading = false;
+        }
+      });
+    } else {
+      // Режим додавання
+      this.analyticsService.createData(this.formData).subscribe({
+        next: (data) => {
+          this.success = 'Дані успішно додані!';
+          this.loading = false;
+          
+          // Очистити форму через 2 секунди та перенаправити
+          setTimeout(() => {
+            this.router.navigate(['/data']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.error = 'Помилка збереження: ' + (err.error?.message || err.message || 'Невідома помилка');
+          this.loading = false;
+        }
+      });
+    }
   }
 
   resetForm() {

@@ -9,6 +9,7 @@ export const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
   { path: 'data', component: DataListComponent },
   { path: 'data/add', component: AddDataComponent },
+  { path: 'data/edit/:id', component: AddDataComponent },
   { path: 'reports', component: AnalysisReportComponent }
 ];
 

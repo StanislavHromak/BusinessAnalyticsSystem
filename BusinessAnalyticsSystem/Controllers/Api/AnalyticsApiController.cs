@@ -7,8 +7,7 @@ using BusinessAnalyticsSystem.Models;
 namespace BusinessAnalyticsSystem.Controllers.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
+    [Route("api/analytics")]
     public class AnalyticsApiController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -18,8 +17,9 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             _context = context;
         }
 
-        // GET: api/AnalyticsApi/data
+        // GET: api/analytics/data
         [HttpGet("data")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<object>>> GetAllData()
         {
             var data = await _context.FinancialDatas
@@ -44,8 +44,9 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return Ok(data);
         }
 
-        // GET: api/AnalyticsApi/data/5
+        // GET: api/analytics/data/5
         [HttpGet("data/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> GetData(int id)
         {
             var item = await _context.FinancialDatas.FindAsync(id);
@@ -71,9 +72,9 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             });
         }
 
-        // POST: api/AnalyticsApi/data
+        // POST: api/analytics/data
         [HttpPost("data")]
-        [Authorize(Roles = "Admin,Owner")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> CreateData([FromBody] FinancialDataDto dto)
         {
             if (!ModelState.IsValid)
@@ -113,9 +114,9 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             });
         }
 
-        // PUT: api/AnalyticsApi/data/5
+        // PUT: api/analytics/data/5
         [HttpPut("data/{id}")]
-        [Authorize(Roles = "Admin,Owner")]
+        [AllowAnonymous]
         public async Task<IActionResult> UpdateData(int id, [FromBody] FinancialDataDto dto)
         {
             if (!ModelState.IsValid)
@@ -144,9 +145,9 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return NoContent();
         }
 
-        // DELETE: api/AnalyticsApi/data/5
+        // DELETE: api/analytics/data/5
         [HttpDelete("data/{id}")]
-        [Authorize(Roles = "Admin,Owner")]
+        [AllowAnonymous]
         public async Task<IActionResult> DeleteData(int id)
         {
             var item = await _context.FinancialDatas.FindAsync(id);
@@ -161,8 +162,9 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return NoContent();
         }
 
-        // GET: api/AnalyticsApi/report?period=Month
+        // GET: api/analytics/report?period=Month
         [HttpGet("report")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> GetAnalysisReport([FromQuery] string period = "Month")
         {
             var dailyData = await _context.FinancialDatas.ToListAsync();
@@ -230,19 +232,20 @@ namespace BusinessAnalyticsSystem.Controllers.Api
 
             var reportModel = new
             {
-                Labels = finalReportData.Select(d => d.Label).ToArray(),
-                Revenues = finalReportData.Select(d => (double)d.Revenue).ToArray(),
-                TotalCosts = finalReportData.Select(d => (double)d.TotalCosts).ToArray(),
-                Profits = finalReportData.Select(d => (double)d.Profit).ToArray(),
-                ROIs = finalReportData.Select(d => (double)d.ROI).ToArray(),
-                ROSs = finalReportData.Select(d => (double)d.ROS).ToArray()
+                labels = finalReportData.Select(d => d.Label).ToArray(),
+                revenues = finalReportData.Select(d => (double)d.Revenue).ToArray(),
+                totalCosts = finalReportData.Select(d => (double)d.TotalCosts).ToArray(),
+                profits = finalReportData.Select(d => (double)d.Profit).ToArray(),
+                rois = finalReportData.Select(d => (double)d.ROI).ToArray(),
+                ross = finalReportData.Select(d => (double)d.ROS).ToArray()
             };
 
             return Ok(reportModel);
         }
 
-        // GET: api/AnalyticsApi/dashboard
+        // GET: api/analytics/dashboard
         [HttpGet("dashboard")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> GetDashboardStats()
         {
             var allData = await _context.FinancialDatas.ToListAsync();
