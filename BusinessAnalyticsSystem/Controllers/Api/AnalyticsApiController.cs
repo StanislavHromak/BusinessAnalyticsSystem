@@ -17,7 +17,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             _context = context;
         }
 
-        // GET: api/analytics/data
         [HttpGet("data")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<object>>> GetAllData()
@@ -44,7 +43,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return Ok(data);
         }
 
-        // GET: api/analytics/data/5
         [HttpGet("data/{id}")]
         [AllowAnonymous]
         public async Task<ActionResult<object>> GetData(int id)
@@ -72,7 +70,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             });
         }
 
-        // POST: api/analytics/data
         [HttpPost("data")]
         [AllowAnonymous]
         public async Task<ActionResult<object>> CreateData([FromBody] FinancialDataDto dto)
@@ -114,7 +111,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             });
         }
 
-        // PUT: api/analytics/data/5
         [HttpPut("data/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> UpdateData(int id, [FromBody] FinancialDataDto dto)
@@ -145,7 +141,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return NoContent();
         }
 
-        // DELETE: api/analytics/data/5
         [HttpDelete("data/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> DeleteData(int id)
@@ -162,7 +157,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return NoContent();
         }
 
-        // GET: api/analytics/report?period=Month
         [HttpGet("report")]
         [AllowAnonymous]
         public async Task<ActionResult<object>> GetAnalysisReport([FromQuery] string period = "Month")
@@ -243,7 +237,6 @@ namespace BusinessAnalyticsSystem.Controllers.Api
             return Ok(reportModel);
         }
 
-        // GET: api/analytics/dashboard
         [HttpGet("dashboard")]
         [AllowAnonymous]
         public async Task<ActionResult<object>> GetDashboardStats()
