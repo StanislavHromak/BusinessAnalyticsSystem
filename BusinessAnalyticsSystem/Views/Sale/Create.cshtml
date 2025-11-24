@@ -1,0 +1,75 @@
+﻿@model BusinessAnalyticsSystem.Models.Sale
+
+@{
+    ViewData["Title"] = "New Sale";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Register New Sale</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SaleDateTime" class="control-label fw-bold"></label>
+                                <input asp-for="SaleDateTime" class="form-control" />
+                                <span asp-validation-for="SaleDateTime" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerName" class="control-label fw-bold"></label>
+                                <input asp-for="CustomerName" class="form-control" placeholder="Customer Name" />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProductId" class="control-label fw-bold">Product</label>
+                            <select asp-for="ProductId" class="form-control form-select" asp-items="ViewBag.ProductId">
+                                <option value="">-- Select Product --</option>
+                            </select>
+                            <small class="form-text text-muted">Unit Price is determined automatically.</small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DepartmentId" class="control-label fw-bold">Department</label>
+                            <select asp-for="DepartmentId" class="form-control form-select" asp-items="ViewBag.DepartmentId">
+                                <option value="">-- Select Department --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Quantity" class="control-label fw-bold"></label>
+                            <input asp-for="Quantity" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Notes" class="control-label fw-bold"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Optional notes..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-success">Register Sale</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

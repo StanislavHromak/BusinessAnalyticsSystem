@@ -8,7 +8,7 @@
     <div class="row justify-content-center mb-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-danger text-white">
                     <h2 class="mb-0"><i class="fas fa-tag me-2"></i>Category Details</h2>
                 </div>
                 <div class="card-body">
@@ -26,16 +26,16 @@
                         <dd class="col-sm-9">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
 
                         <dt class="col-sm-3">Products Count:</dt>
-                        <dd class="col-sm-9"><span class="badge bg-info">@Model.Products.Count</span></dd>
+                        <dd class="col-sm-9"><span class="badge bg-danger">@Model.Products.Count</span></dd>
                     </dl>
 
                     @if (Model.Products.Any())
                     {
                         <hr />
-                        <h5>Products in this category:</h5>
+                        <h5 class="text-danger">Products in this category:</h5>
                         <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
                                     <tr>
                                         <th>Name</th>
                                         <th>Code</th>
