@@ -30,18 +30,18 @@
                                 <dd class="col-sm-6 fw-bold">@Model.Date.ToString("dd.MM.yyyy")</dd>
 
                                 <dt class="col-sm-6">Revenue</dt>
-                                <dd class="col-sm-6">@Model.Revenue.ToString("C")</dd>
+                                <dd class="col-sm-6">@Model.Revenue.ToString("N2") ₴</dd>
 
                                 <dt class="col-sm-6">Total Costs</dt>
-                                <dd class="col-sm-6">@Model.TotalCosts.ToString("C")</dd>
+                                <dd class="col-sm-6">@Model.TotalCosts.ToString("N2") ₴</dd>
 
                                 <dt class="col-sm-6">Profit</dt>
                                 <dd class="col-sm-6 @(Model.Profit >= 0 ? "text-success" : "text-danger") fw-bold">
-                                    @Model.Profit.ToString("C")
+                                    @Model.Profit.ToString("N2") ₴
                                 </dd>
 
                                 <dt class="col-sm-6">Investment</dt>
-                                <dd class="col-sm-6">@Model.Investment.ToString("C")</dd>
+                                <dd class="col-sm-6">@Model.Investment.ToString("N2") ₴</dd>
                             </dl>
                         </div>
 
@@ -52,10 +52,10 @@
                                 <dd class="col-sm-6">@Model.UnitsSold</dd>
 
                                 <dt class="col-sm-6">Price Per Unit</dt>
-                                <dd class="col-sm-6">@Model.PricePerUnit.ToString("C")</dd>
+                                <dd class="col-sm-6">@Model.PricePerUnit.ToString("N2") ₴</dd>
 
                                 <dt class="col-sm-6">Margin / Unit</dt>
-                                <dd class="col-sm-6">@Model.MarginPerUnit.ToString("C")</dd>
+                                <dd class="col-sm-6">@Model.MarginPerUnit.ToString("N2") ₴</dd>
 
                                 <dt class="col-sm-6">ROI</dt>
                                 <dd class="col-sm-6">@Model.ROI.ToString("F2")%</dd>
@@ -92,7 +92,7 @@
                                             <td>@sale.Product?.Name</td>
                                             <td>@sale.Product?.Category?.Name</td>
                                             <td>@sale.Quantity</td>
-                                            <td>@sale.TotalAmount.ToString("C")</td>
+                                            <td>@sale.TotalAmount.ToString("N2") ₴</td>
                                         </tr>
                                     }
                                 </tbody>

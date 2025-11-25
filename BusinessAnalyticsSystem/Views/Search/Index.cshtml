@@ -109,7 +109,7 @@
                                             <td><span class="badge bg-info">@sale.Product?.Category?.Name</span></td>
                                             <td>@sale.Department?.Name</td>
                                             <td>@sale.Quantity</td>
-                                            <td><strong>@sale.TotalAmount.ToString("C")</strong></td>
+                                            <td><strong>@sale.TotalAmount.ToString("N2") ₴</strong></td>
                                             <td>@sale.CustomerName</td>
                                         </tr>
                                     }

@@ -41,10 +41,10 @@
                         <dd class="col-sm-8">@Model.Quantity</dd>
 
                         <dt class="col-sm-4">Unit Price:</dt>
-                        <dd class="col-sm-8">@Model.UnitPrice.ToString("C")</dd>
+                        <dd class="col-sm-8">@Model.UnitPrice.ToString("N2") ₴</dd>
 
                         <dt class="col-sm-4">Total Amount:</dt>
-                        <dd class="col-sm-8"><strong class="text-success">@Model.TotalAmount.ToString("C")</strong></dd>
+                        <dd class="col-sm-8"><strong class="text-success">@Model.TotalAmount.ToString("N2") ₴</strong></dd>
 
                         <dt class="col-sm-4">Customer:</dt>
                         <dd class="col-sm-8">@(Model.CustomerName ?? "-")</dd>

@@ -20,11 +20,11 @@
                         <dd class="col-sm-8 fw-bold">@Model.Date.ToString("dd.MM.yyyy")</dd>
 
                         <dt class="col-sm-4">Revenue</dt>
-                        <dd class="col-sm-8">@Model.Revenue.ToString("C")</dd>
+                        <dd class="col-sm-8">@Model.Revenue.ToString("N2") ₴</dd>
 
                         <dt class="col-sm-4">Profit</dt>
                         <dd class="col-sm-8 @(Model.Profit >= 0 ? "text-success" : "text-danger")">
-                            @Model.Profit.ToString("C")
+                            @Model.Profit.ToString("N2") ₴
                         </dd>
 
                         <dt class="col-sm-4">Source</dt>
