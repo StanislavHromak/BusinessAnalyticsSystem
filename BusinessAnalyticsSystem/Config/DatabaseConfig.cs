@@ -38,7 +38,6 @@ namespace BusinessAnalyticsSystem.Config
                         break;
 
                     default:
-                        // By default use Sqlite
                         var defaultConnection = connectionStrings["Sqlite"];
                         options.UseSqlite(defaultConnection);
                         break;

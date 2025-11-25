@@ -6,19 +6,19 @@ using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
 using System.Globalization;
 
-var builder = WebApplication.CreateBuilder(args);
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-// Set default culture to English (US)
+var builder = WebApplication.CreateBuilder(args);
 var cultureInfo = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddControllersWithViews();
 
-// Add API Controllers
+// API Controllers
 builder.Services.AddControllers();
 
-// Add CORS for Angular
+// CORS for Angular
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
@@ -37,12 +37,11 @@ builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// Add OpenIddict for OAuth2/OpenID Connect
+// OpenIddict for OAuth2/OpenID Connect
 builder.Services.AddOpenIddict()
     .AddCore(options => options.UseEntityFrameworkCore().UseDbContext<AppDbContext>())
     .AddServer(options =>
-    {
-        // Enable OAuth2/OpenID Connect endpoints 
+    { 
         options.SetAuthorizationEndpointUris("connect/authorize")
                .SetTokenEndpointUris("connect/token")
                .SetUserInfoEndpointUris("connect/userinfo")
@@ -87,16 +86,10 @@ app.UseRouting();
 
 // Use CORS before authentication
 app.UseCors("AllowAngularApp");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseSession();
-
-// Map API routes
 app.MapControllers();
-
-// Map MVC routes
 app.MapControllerRoute(
     name : "default",
     pattern : "{controller=Home}/{action=Index}/{id?}");
@@ -116,7 +109,6 @@ using (var scope = app.Services.CreateScope())
         db.Database.EnsureCreated();
     }
     
-    // Populate with initial data
     DbInitializer.Initialize(db);
 
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
