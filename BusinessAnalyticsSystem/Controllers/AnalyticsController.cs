@@ -71,6 +71,7 @@ namespace BusinessAnalyticsSystem.Controllers
             {
                 var relatedSales = await _context.Sales
                     .Include(s => s.Product)
+                        .ThenInclude(p => p.Category)
                     .Include(s => s.Department)
                     .Where(s => s.SaleDateTime.Date == item.Date.Date)
                     .ToListAsync();
