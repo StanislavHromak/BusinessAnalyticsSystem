@@ -21,7 +21,7 @@ $install_script = <<-SHELL
     
     dotnet tool uninstall -g BusinessAnalyticsSystem 2>/dev/null || true
     
-    dotnet tool install --global BusinessAnalyticsSystem --add-source "/vagrant/packages" --version 1.0.8
+    dotnet tool install --global BusinessAnalyticsSystem --add-source "/vagrant/packages" --version 1.0.9
     
     export PATH="$PATH:$HOME/.dotnet/tools"
     
