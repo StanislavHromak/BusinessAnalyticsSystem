@@ -1,18 +1,15 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# --- Linux script ---
-$linux_script = <<-SHELL
-    echo "--- Starting Ubuntu setup (.NET 8) ---"
+# Script for Ubuntu/Debian 
+$install_script = <<-SHELL
+    echo "--- Starting Setup (.NET 8) ---"
     
     sudo apt-get update
-    
     sudo apt-get install -y wget apt-transport-https gpg
     
     wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-    
     sudo dpkg -i packages-microsoft-prod.deb
-    
     rm packages-microsoft-prod.deb
     
     sudo apt-get update
@@ -20,30 +17,52 @@ $linux_script = <<-SHELL
     echo "--- Installing .NET 8 SDK ---"
     sudo apt-get install -y dotnet-sdk-8.0
     
-    echo "--- Adding BaGet private repository ---"
-    dotnet nuget add source "http://baget.local/v3/index.json" -n "BaGetRepo"
+    echo "--- Installing App from local package ---"
     
-    echo "--- Installing package BusinessAnalyticsSystem... ---"
-    mkdir /opt/app_install
-    cd /opt/app_install
-    dotnet new console -n DummyApp
-    cd DummyApp
-    dotnet add package BusinessAnalyticsSystem --version 1.0.0 --source "BaGetRepo"
+    dotnet tool uninstall -g BusinessAnalyticsSystem 2>/dev/null || true
     
-    echo "--- Deployment on Ubuntu complete ---"
+    dotnet tool install --global BusinessAnalyticsSystem --add-source "/vagrant/packages" --version 1.0.8
+    
+    export PATH="$PATH:$HOME/.dotnet/tools"
+    
+    echo "--- Starting App ---"
+    nohup bas-app --urls "http://0.0.0.0:8080" > /home/vagrant/app.log 2>&1 &
 SHELL
 
 Vagrant.configure("2") do |config|
 
-  # --- Ubuntu Linux ---
+  # Ubuntu 
   config.vm.define "ubuntu" do |ubuntu|
     ubuntu.vm.box = "ubuntu/focal64"
     ubuntu.vm.hostname = "ubuntu-server"
+    
+    ubuntu.vm.network "forwarded_port", guest: 8080, host: 8080
+    ubuntu.vm.synced_folder "./packages", "/vagrant/packages"
+
     ubuntu.vm.provider "virtualbox" do |vb|
       vb.memory = "2048"
-      vb.gui = true  
+      vb.cpus = 2
+      vb.gui = true
     end
 
-    ubuntu.vm.provision "shell", inline: $linux_script
+    ubuntu.vm.provision "shell", inline: $install_script, run: "always"
   end
+
+  # Debian
+  config.vm.define "debian" do |debian|
+    debian.vm.box = "debian/bullseye64" # Debian 11
+    debian.vm.hostname = "debian-server"
+    
+    debian.vm.network "forwarded_port", guest: 8080, host: 8081
+    debian.vm.synced_folder "./packages", "/vagrant/packages"
+
+    debian.vm.provider "virtualbox" do |vb|
+      vb.memory = "2048"
+      vb.cpus = 2
+      vb.gui = true
+    end
+
+    debian.vm.provision "shell", inline: $install_script, run: "always"
+  end
+
 end

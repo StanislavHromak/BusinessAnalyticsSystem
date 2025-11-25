@@ -9,16 +9,14 @@ using System.Globalization;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
+
 var cultureInfo = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddControllersWithViews();
-
-// API Controllers
 builder.Services.AddControllers();
 
-// CORS for Angular
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
@@ -30,18 +28,16 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Configure Database with support for 4 DB types
 DatabaseConfig.ConfigureDatabase(builder.Services, builder.Configuration);
 
 builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// OpenIddict for OAuth2/OpenID Connect
 builder.Services.AddOpenIddict()
     .AddCore(options => options.UseEntityFrameworkCore().UseDbContext<AppDbContext>())
     .AddServer(options =>
-    { 
+    {
         options.SetAuthorizationEndpointUris("connect/authorize")
                .SetTokenEndpointUris("connect/token")
                .SetUserInfoEndpointUris("connect/userinfo")
@@ -73,6 +69,7 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -80,86 +77,104 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
-// Use CORS before authentication
 app.UseCors("AllowAngularApp");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+
 app.MapControllers();
 app.MapControllerRoute(
-    name : "default",
-    pattern : "{controller=Home}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    
-    // Apply migrations or create database
+    var services = scope.ServiceProvider;
+    var db = services.GetRequiredService<AppDbContext>();
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
     try
     {
         db.Database.Migrate();
     }
     catch
     {
-        // If migrations are not applied, create database
-        db.Database.EnsureCreated();
-    }
-    
-    DbInitializer.Initialize(db);
-
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
-    string[] roles = { "Admin", "Owner", "Investor" };
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
+        try
         {
-            await roleManager.CreateAsync(new IdentityRole<int>(role));
+            db.Database.EnsureCreated();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Critical Error: Could not create database structure.");
         }
     }
 
-    var adminUsername = "admin";
-    var admin = await userManager.FindByNameAsync(adminUsername);
-    if (admin == null)
+    try
     {
-        admin = new User
-        {
-            UserName = adminUsername,
-            FullName = "System Administrator",
-            Email = "admin@system.com",
-            PhoneNumber = "+380000000000"
-        };
-        var result = await userManager.CreateAsync(admin, "Admin@123");
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(admin, "Admin");
-        }
-    }
+        DbInitializer.Initialize(db);
 
-    var appManager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
-    if (await appManager.FindByClientIdAsync("default-client") == null)
-    {
-        await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+        var userManager = services.GetRequiredService<UserManager<User>>();
+
+        string[] roles = { "Admin", "Owner", "Investor" };
+        foreach (var role in roles)
         {
-            ClientId = "default-client",
-            ClientSecret = "secret",
-            DisplayName = "Default MVC Client",
-            Permissions =
+            if (!await roleManager.RoleExistsAsync(role))
             {
-                OpenIddictConstants.Permissions.Endpoints.Authorization,
-                OpenIddictConstants.Permissions.Endpoints.Token,
-                OpenIddictConstants.Permissions.GrantTypes.Password,
-                OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-                OpenIddictConstants.Permissions.Scopes.Profile
+                await roleManager.CreateAsync(new IdentityRole<int>(role));
             }
-        });
+        }
+
+        var adminUsername = "admin";
+        var admin = await userManager.FindByNameAsync(adminUsername);
+        if (admin == null)
+        {
+            admin = new User
+            {
+                UserName = adminUsername,
+                FullName = "System Administrator",
+                Email = "admin@system.com",
+                PhoneNumber = "+380000000000"
+            };
+            var result = await userManager.CreateAsync(admin, "Admin@123");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(admin, "Admin");
+            }
+        }
+
+        // ²í³ö³àë³çàö³ÿ êë³ºíòà OpenIddict
+        var appManager = services.GetRequiredService<IOpenIddictApplicationManager>();
+        if (await appManager.FindByClientIdAsync("default-client") == null)
+        {
+            await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+            {
+                ClientId = "default-client",
+                ClientSecret = "secret",
+                DisplayName = "Default MVC Client",
+                Permissions =
+                {
+                    OpenIddictConstants.Permissions.Endpoints.Authorization,
+                    OpenIddictConstants.Permissions.Endpoints.Token,
+                    OpenIddictConstants.Permissions.GrantTypes.Password,
+                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                    OpenIddictConstants.Permissions.Scopes.Profile
+                }
+            });
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while seeding the database. Application will continue to start.");
     }
 }
 
-app.Run();
+app.MapFallbackToFile("index.html");
 
+app.Run();

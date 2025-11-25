@@ -1,5 +1,8 @@
 using BusinessAnalyticsSystem.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BusinessAnalyticsSystem.Data
 {
@@ -7,14 +10,28 @@ namespace BusinessAnalyticsSystem.Data
     {
         public static void Initialize(AppDbContext context)
         {
-            // Delete existing data to ensure fresh English data
-            context.Sales.RemoveRange(context.Sales);
-            context.Products.RemoveRange(context.Products);
-            context.Departments.RemoveRange(context.Departments);
-            context.Categories.RemoveRange(context.Categories);
+            if (context.Sales.Any())
+            {
+                context.Sales.RemoveRange(context.Sales);
+            }
+
+            if (context.Products.Any())
+            {
+                context.Products.RemoveRange(context.Products);
+            }
+
+            if (context.Departments.Any())
+            {
+                context.Departments.RemoveRange(context.Departments);
+            }
+
+            if (context.Categories.Any())
+            {
+                context.Categories.RemoveRange(context.Categories);
+            }
+
             context.SaveChanges();
 
-            // Create Reference Table 1: Categories
             var categories = new Category[]
             {
                 new Category { Name = "Electronics", Description = "Electronic devices and accessories", CreatedDate = DateTime.Now.AddDays(-30) },
@@ -27,7 +44,6 @@ namespace BusinessAnalyticsSystem.Data
             context.Categories.AddRange(categories);
             context.SaveChanges();
 
-            // Create Reference Table 2: Departments
             var departments = new Department[]
             {
                 new Department { Name = "Sales Department", Manager = "John Smith", Description = "Responsible for product sales", CreatedDate = DateTime.Now.AddDays(-30) },
@@ -40,7 +56,6 @@ namespace BusinessAnalyticsSystem.Data
             context.Departments.AddRange(departments);
             context.SaveChanges();
 
-            // Create Products
             var products = new Product[]
             {
                 new Product { Name = "Samsung Smartphone", Code = "SM-001", Price = 15000, StockQuantity = 50, CategoryId = categories[0].Id, CreatedDate = DateTime.Now.AddDays(-20) },
@@ -58,7 +73,6 @@ namespace BusinessAnalyticsSystem.Data
             context.Products.AddRange(products);
             context.SaveChanges();
 
-            // Create Sales (Central table)
             var random = new Random();
             var sales = new List<Sale>();
 
