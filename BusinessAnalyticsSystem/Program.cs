@@ -1,8 +1,10 @@
+using Asp.Versioning;
+using BusinessAnalyticsSystem.Config;
 using BusinessAnalyticsSystem.Data;
 using BusinessAnalyticsSystem.Models;
-using BusinessAnalyticsSystem.Config;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
 using System.Globalization;
 
@@ -16,6 +18,65 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
+
+builder.Services.AddOpenApiDocument(options =>
+{
+    options.Title = "Business Analytics API";
+    options.Version = "v1";
+    options.DocumentName = "v1";
+});
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(),
+        new HeaderApiVersionReader("x-api-version"),
+        new QueryStringApiVersionReader("api-version"));
+})
+.AddMvc()
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+// Swashbuckle (for UI)
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Business Analytics API V1", Version = "v1" });
+    options.SwaggerDoc("v2", new OpenApiInfo { Title = "Business Analytics API V2", Version = "v2" });
+
+    var xmlFile = $"{builder.Environment.ApplicationName}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            new string[] { }
+        }
+    });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -69,21 +130,24 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
+// Swashbuckle UI
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+    options.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
+});
+
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseCors("AllowAngularApp");
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
@@ -96,77 +160,72 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var db = services.GetRequiredService<AppDbContext>();
     var logger = services.GetRequiredService<ILogger<Program>>();
+    var db = services.GetRequiredService<AppDbContext>();
 
     try
-    {
-        db.Database.Migrate();
-    }
-    catch
     {
         try
         {
-            db.Database.EnsureCreated();
+            db.Database.Migrate();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Critical Error: Could not create database structure.");
-        }
-    }
-
-    try
-    {
-        DbInitializer.Initialize(db);
-
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-        var userManager = services.GetRequiredService<UserManager<User>>();
-
-        string[] roles = { "Admin", "Owner", "Investor" };
-        foreach (var role in roles)
-        {
-            if (!await roleManager.RoleExistsAsync(role))
-            {
-                await roleManager.CreateAsync(new IdentityRole<int>(role));
-            }
+            logger.LogWarning($"Database migration failed (safe to ignore during NSwag build): {ex.Message}");
         }
 
-        var adminUsername = "admin";
-        var admin = await userManager.FindByNameAsync(adminUsername);
-        if (admin == null)
+        if (db.Database.CanConnect())
         {
-            admin = new User
-            {
-                UserName = adminUsername,
-                FullName = "System Administrator",
-                Email = "admin@system.com",
-                PhoneNumber = "+380000000000"
-            };
-            var result = await userManager.CreateAsync(admin, "Admin@123");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, "Admin");
-            }
-        }
+            DbInitializer.Initialize(db);
 
-        // ²í³ö³àë³çàö³ÿ êë³ºíòà OpenIddict
-        var appManager = services.GetRequiredService<IOpenIddictApplicationManager>();
-        if (await appManager.FindByClientIdAsync("default-client") == null)
-        {
-            await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+            var userManager = services.GetRequiredService<UserManager<User>>();
+
+            string[] roles = { "Admin", "Owner", "Investor" };
+            foreach (var role in roles)
             {
-                ClientId = "default-client",
-                ClientSecret = "secret",
-                DisplayName = "Default MVC Client",
-                Permissions =
+                if (!await roleManager.RoleExistsAsync(role))
                 {
-                    OpenIddictConstants.Permissions.Endpoints.Authorization,
-                    OpenIddictConstants.Permissions.Endpoints.Token,
-                    OpenIddictConstants.Permissions.GrantTypes.Password,
-                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-                    OpenIddictConstants.Permissions.Scopes.Profile
+                    await roleManager.CreateAsync(new IdentityRole<int>(role));
                 }
-            });
+            }
+
+            var adminUsername = "admin";
+            var admin = await userManager.FindByNameAsync(adminUsername);
+            if (admin == null)
+            {
+                admin = new User
+                {
+                    UserName = adminUsername,
+                    FullName = "System Administrator",
+                    Email = "admin@system.com",
+                    PhoneNumber = "+380000000000"
+                };
+                var result = await userManager.CreateAsync(admin, "Admin@123");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "Admin");
+                }
+            }
+
+            var appManager = services.GetRequiredService<IOpenIddictApplicationManager>();
+            if (await appManager.FindByClientIdAsync("default-client") == null)
+            {
+                await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "default-client",
+                    ClientSecret = "secret",
+                    DisplayName = "Default MVC Client",
+                    Permissions =
+                    {
+                        OpenIddictConstants.Permissions.Endpoints.Authorization,
+                        OpenIddictConstants.Permissions.Endpoints.Token,
+                        OpenIddictConstants.Permissions.GrantTypes.Password,
+                        OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                        OpenIddictConstants.Permissions.Scopes.Profile
+                    }
+                });
+            }
         }
     }
     catch (Exception ex)
