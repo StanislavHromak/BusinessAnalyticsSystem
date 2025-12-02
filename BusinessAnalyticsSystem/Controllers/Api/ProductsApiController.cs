@@ -47,14 +47,14 @@ namespace BusinessAnalyticsSystem.Controllers.Api
                     Price = p.Price,
                     Stock = p.StockQuantity,
                     Category = p.Category.Name,
-                    // Нове поле в V2
+
                     InventoryValue = p.Price * p.StockQuantity,
                     LastUpdated = DateTime.Now
                 })
                 .ToListAsync();
         }
 
-        // CRUD методи (загальні для обох версій або специфічні)
+        // CRUD методи 
         [HttpPost]
         [ApiVersion("1.0")]
         [ApiVersion("2.0")]

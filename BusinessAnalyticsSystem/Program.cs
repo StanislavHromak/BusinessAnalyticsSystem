@@ -6,11 +6,40 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using System.Globalization;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
+
+// OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder =>
+    {
+        tracerProviderBuilder
+            .AddSource(builder.Environment.ApplicationName)
+            .AddSource("BusinessAnalyticsSystem")
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("BusinessAnalyticsSystem"))
+            .AddAspNetCoreInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation() 
+            .AddHttpClientInstrumentation()
+            .AddZipkinExporter(options =>
+            {
+                options.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
+            });
+    })
+    .WithMetrics(metricsProviderBuilder =>
+    {
+        metricsProviderBuilder
+            .AddMeter(builder.Environment.ApplicationName)
+            .AddAspNetCoreInstrumentation()
+            .AddRuntimeInstrumentation() // CPU, RAM, GC
+            .AddPrometheusExporter();
+    });
 
 var cultureInfo = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -114,6 +143,11 @@ builder.Services.AddOpenIddict()
 
         if (builder.Environment.IsDevelopment())
             options.DisableAccessTokenEncryption();
+
+        options.UseAspNetCore()
+               .EnableTokenEndpointPassthrough()
+               .EnableAuthorizationEndpointPassthrough()
+               .EnableUserInfoEndpointPassthrough();
     })
     .AddValidation(options =>
     {
@@ -144,7 +178,7 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/v2/swagger.json", "API V2");
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowAngularApp");
@@ -220,9 +254,15 @@ using (var scope = app.Services.CreateScope())
                     {
                         OpenIddictConstants.Permissions.Endpoints.Authorization,
                         OpenIddictConstants.Permissions.Endpoints.Token,
+
                         OpenIddictConstants.Permissions.GrantTypes.Password,
                         OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
-                        OpenIddictConstants.Permissions.Scopes.Profile
+
+                        OpenIddictConstants.Permissions.Scopes.Profile,
+                        OpenIddictConstants.Permissions.Scopes.Email,
+                        OpenIddictConstants.Permissions.Scopes.Roles,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OpenId,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + OpenIddictConstants.Scopes.OfflineAccess
                     }
                 });
             }
@@ -235,5 +275,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapFallbackToFile("index.html");
+
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();
