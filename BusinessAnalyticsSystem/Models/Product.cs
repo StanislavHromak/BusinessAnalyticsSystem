@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BusinessAnalyticsSystem.Models
 {
-    // Intermediate table between reference tables and central table
     public class Product
     {
         public int Id { get; set; }
